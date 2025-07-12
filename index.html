@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel - Pengangkutan Ikan (Localhost)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .sidebar-item.active {
+        background-color: #1d4ed8;
+        color: white;
+      }
+      .modal {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+      .modal.hidden {
+        visibility: hidden;
+        opacity: 0;
+      }
+      .table-auto th,
+      .table-auto td {
+        white-space: nowrap;
+      }
+      .notification-badge {
+        position: absolute;
+        top: 6px;
+        right: 10px;
+        height: 20px;
+        width: 20px;
+        background-color: #ef4444;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <!-- Login & Registration Screen -->
+    <div
+      id="auth-screen"
+      class="flex items-center justify-center h-screen bg-gray-200"
+    >
+      <div class="w-full max-w-md">
+        <!-- Login Form -->
+        <div id="login-container">
+          <div class="p-8 space-y-6 bg-white rounded-lg shadow-md">
+            <div class="text-center">
+              <i class="fas fa-fish fa-3x text-blue-500"></i>
+              <h2 class="mt-4 text-2xl font-bold text-gray-900">
+                Selamat Datang di IKAN-GO
+              </h2>
+              <p class="text-gray-600">Silakan login untuk melanjutkan</p>
+            </div>
+            <form id="login-form" class="space-y-6">
+              <div>
+                <label for="username" class="text-sm font-medium text-gray-700"
+                  >Username</label
+                >
+                <input
+                  id="username"
+                  name="username"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="admin atau user"
+                />
+              </div>
+              <div>
+                <label for="password" class="text-sm font-medium text-gray-700"
+                  >Password</label
+                >
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="password"
+                />
+              </div>
+              <p id="login-error" class="text-sm text-red-600 hidden">
+                Username atau password salah!
+              </p>
+              <div>
+                <button
+                  type="submit"
+                  class="w-full px-4 py-2 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Login
+                </button>
+              </div>
+            </form>
+            <p class="text-sm text-center text-gray-600">
+              Belum punya akun?
+              <a
+                href="#"
+                id="show-register-link"
+                class="font-medium text-blue-600 hover:text-blue-500"
+                >Registrasi</a
+              >
+            </p>
+          </div>
+        </div>
+
+        <!-- Registration Form (Initially Hidden) -->
+        <div id="register-container" class="hidden">
+          <div class="p-8 space-y-4 bg-white rounded-lg shadow-md">
+            <div class="text-center">
+              <i class="fas fa-user-plus fa-3x text-blue-500"></i>
+              <h2 class="mt-4 text-2xl font-bold text-gray-900">
+                Buat Akun Baru
+              </h2>
+            </div>
+            <form id="register-form" class="space-y-4">
+              <div>
+                <label
+                  for="register-fullName"
+                  class="text-sm font-medium text-gray-700"
+                  >Nama Lengkap</label
+                >
+                <input
+                  id="register-fullName"
+                  name="fullName"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Nama lengkap Anda"
+                />
+              </div>
+              <div>
+                <label
+                  for="register-phone"
+                  class="text-sm font-medium text-gray-700"
+                  >Nomor Telepon</label
+                >
+                <input
+                  id="register-phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Nomor telepon aktif"
+                />
+              </div>
+              <div>
+                <label
+                  for="register-address"
+                  class="text-sm font-medium text-gray-700"
+                  >Alamat</label
+                >
+                <textarea
+                  id="register-address"
+                  name="address"
+                  rows="2"
+                  required
+                  class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Alamat lengkap"
+                ></textarea>
+              </div>
+              <div>
+                <label
+                  for="register-service"
+                  class="text-sm font-medium text-gray-700"
+                  >Pilih Paket Layanan</label
+                >
+                <select
+                  id="register-service"
+                  name="serviceId"
+                  required
+                  class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <!-- Options will be populated by JS -->
+                </select>
+              </div>
+              <hr />
+              <div>
+                <label
+                  for="register-username"
+                  class="text-sm font-medium text-gray-700"
+                  >Username</label
+                >
+                <input
+                  id="register-username"
+                  name="username"
+                  type="text"
+                  required
+                  class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Pilih username"
+                />
+              </div>
+              <div>
+                <label
+                  for="register-password"
+                  class="text-sm font-medium text-gray-700"
+                  >Password</label
+                >
+                <input
+                  id="register-password"
+                  name="password"
+                  type="password"
+                  required
+                  class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Buat password"
+                />
+              </div>
+              <p id="register-error" class="text-sm text-red-600 hidden"></p>
+              <div>
+                <button
+                  type="submit"
+                  class="w-full px-4 py-2 font-semibold text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Registrasi
+                </button>
+              </div>
+            </form>
+            <p class="text-sm text-center text-gray-600">
+              Sudah punya akun?
+              <a
+                href="#"
+                id="show-login-link"
+                class="font-medium text-blue-600 hover:text-blue-500"
+                >Login</a
+              >
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin App Screen (Initially Hidden) -->
+    <div id="admin-app-screen" class="hidden">
+      <div class="flex h-screen bg-gray-200">
+        <!-- Sidebar -->
+        <div
+          id="admin-sidebar"
+          class="w-64 bg-gray-800 text-white flex flex-col fixed h-full z-20"
+        >
+          <div class="px-6 py-4 border-b border-gray-700 flex items-center">
+            <i class="fas fa-fish fa-2x mr-3 text-blue-400"></i>
+            <h2 class="font-bold text-xl">IKAN-GO (Admin)</h2>
+          </div>
+          <nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="dashboard"
+            >
+              <i class="fas fa-tachometer-alt w-6"></i
+              ><span class="ml-3">Dashboard</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item relative flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="notifications"
+            >
+              <i class="fas fa-bell w-6"></i
+              ><span class="ml-3">Notifikasi</span>
+              <span
+                id="admin-notification-badge"
+                class="notification-badge hidden"
+              ></span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="buy-fish"
+            >
+              <i class="fas fa-shopping-basket w-6"></i
+              ><span class="ml-3">Katalog Ikan</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="schedules"
+            >
+              <i class="fas fa-calendar-alt w-6"></i
+              ><span class="ml-3">Jadwal Angkut</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="services"
+            >
+              <i class="fas fa-box-open w-6"></i
+              ><span class="ml-3">Paket Layanan</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="fleet"
+            >
+              <i class="fas fa-truck w-6"></i
+              ><span class="ml-3">Data Armada</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="customers"
+            >
+              <i class="fas fa-users w-6"></i
+              ><span class="ml-3">Data Customer</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="orders"
+            >
+              <i class="fas fa-shopping-cart w-6"></i
+              ><span class="ml-3">Data Pesanan</span>
+            </a>
+          </nav>
+          <div class="px-6 py-4 border-t border-gray-700 text-xs">
+            <p>Mode: Localhost (Admin)</p>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col ml-64">
+          <header
+            class="bg-white shadow-md p-4 flex justify-between items-center"
+          >
+            <h1
+              id="admin-page-title"
+              class="text-2xl font-semibold text-gray-800"
+            >
+              Dashboard
+            </h1>
+            <button
+              id="admin-logout-btn"
+              class="logout-btn bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
+            >
+              <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+          </header>
+          <main class="flex-1 p-6 overflow-y-auto">
+            <!-- Page Content Goes Here -->
+            <div id="page-dashboard" class="page-content">
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div
+                  class="bg-white p-6 rounded-lg shadow-md flex items-center"
+                >
+                  <i class="fas fa-shopping-cart fa-3x text-blue-500"></i>
+                  <div class="ml-4">
+                    <h3 class="text-gray-500">Total Pesanan</h3>
+                    <p id="total-orders" class="text-2xl font-bold">0</p>
+                  </div>
+                </div>
+                <div
+                  class="bg-white p-6 rounded-lg shadow-md flex items-center"
+                >
+                  <i class="fas fa-users fa-3x text-green-500"></i>
+                  <div class="ml-4">
+                    <h3 class="text-gray-500">Total Customer</h3>
+                    <p id="total-customers" class="text-2xl font-bold">0</p>
+                  </div>
+                </div>
+                <div
+                  class="bg-white p-6 rounded-lg shadow-md flex items-center"
+                >
+                  <i class="fas fa-truck fa-3x text-yellow-500"></i>
+                  <div class="ml-4">
+                    <h3 class="text-gray-500">Total Armada</h3>
+                    <p id="total-fleet" class="text-2xl font-bold">0</p>
+                  </div>
+                </div>
+                <div
+                  class="bg-white p-6 rounded-lg shadow-md flex items-center"
+                >
+                  <i class="fas fa-calendar-alt fa-3x text-red-500"></i>
+                  <div class="ml-4">
+                    <h3 class="text-gray-500">Jadwal Aktif</h3>
+                    <p id="total-schedules" class="text-2xl font-bold">0</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="page-notifications" class="page-content hidden"></div>
+            <div id="page-buy-fish" class="page-content hidden"></div>
+            <div id="page-schedules" class="page-content hidden"></div>
+            <div id="page-services" class="page-content hidden"></div>
+            <div id="page-fleet" class="page-content hidden"></div>
+            <div id="page-customers" class="page-content hidden"></div>
+            <div id="page-orders" class="page-content hidden"></div>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <!-- User App Screen (Initially Hidden) -->
+    <div id="user-app-screen" class="hidden">
+      <div class="flex h-screen bg-gray-200">
+        <!-- Sidebar -->
+        <div
+          id="user-sidebar"
+          class="w-64 bg-gray-800 text-white flex flex-col fixed h-full z-20"
+        >
+          <div class="px-6 py-4 border-b border-gray-700 flex items-center">
+            <i class="fas fa-fish fa-2x mr-3 text-blue-400"></i>
+            <h2 class="font-bold text-xl">IKAN-GO</h2>
+          </div>
+          <nav class="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="dashboard"
+            >
+              <i class="fas fa-home w-6"></i><span class="ml-3">Home</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="profile"
+            >
+              <i class="fas fa-user-circle w-6"></i
+              ><span class="ml-3">Profil Saya</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item relative flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="notifications"
+            >
+              <i class="fas fa-bell w-6"></i
+              ><span class="ml-3">Notifikasi</span>
+              <span
+                id="user-notification-badge"
+                class="notification-badge hidden"
+              ></span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="buy-fish"
+            >
+              <i class="fas fa-shopping-basket w-6"></i
+              ><span class="ml-3">Beli Ikan</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="transport-request"
+            >
+              <i class="fas fa-truck-loading w-6"></i
+              ><span class="ml-3">Angkut Ikan</span>
+            </a>
+          </nav>
+          <div class="px-6 py-4 border-t border-gray-700 text-xs">
+            <p>Login sebagai: <span id="loggedInUsername">User</span></p>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col ml-64">
+          <header
+            class="bg-white shadow-md p-4 flex justify-between items-center"
+          >
+            <h1
+              id="user-page-title"
+              class="text-2xl font-semibold text-gray-800"
+            >
+              Home
+            </h1>
+            <button
+              id="user-logout-btn"
+              class="logout-btn bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
+            >
+              <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+          </header>
+          <main class="flex-1 p-6 overflow-y-auto">
+            <div id="page-user-dashboard" class="page-content-user">
+              <div class="bg-white p-8 rounded-lg shadow-md text-center">
+                <h2 class="text-2xl font-bold text-gray-800">
+                  Selamat Datang, User!
+                </h2>
+                <p class="mt-2 text-gray-600">
+                  Silakan jelajahi katalog ikan segar kami melalui menu "Beli
+                  Ikan".
+                </p>
+              </div>
+            </div>
+            <div id="page-user-profile" class="page-content-user hidden"></div>
+            <div
+              id="page-user-notifications"
+              class="page-content-user hidden"
+            ></div>
+            <div id="page-user-buy-fish" class="page-content-user hidden"></div>
+            <div
+              id="page-user-transport-request"
+              class="page-content-user hidden"
+            ></div>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generic Modal for Admin -->
+    <div
+      id="formModal"
+      class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 transform transition-all"
+      >
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 id="modalTitle" class="text-xl font-semibold"></h3>
+          <button id="closeModalBtn" class="text-gray-500 hover:text-gray-800">
+            &times;
+          </button>
+        </div>
+        <form id="dataForm" class="mt-4 space-y-4"></form>
+      </div>
+    </div>
+
+    <!-- Purchase Modal for User -->
+    <div
+      id="purchaseModal"
+      class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-30"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 transform transition-all"
+      >
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="text-xl font-semibold">Formulir Pembelian</h3>
+          <button
+            id="closePurchaseModalBtn"
+            class="text-gray-500 hover:text-gray-800"
+          >
+            &times;
+          </button>
+        </div>
+        <form id="purchaseForm" class="mt-4 space-y-4">
+          <input type="hidden" id="purchaseProductId" name="productId" />
+          <div>
+            <label class="block text-sm font-medium text-gray-700"
+              >Nama Produk</label
+            >
+            <input
+              id="purchaseProductName"
+              type="text"
+              readonly
+              class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            />
+          </div>
+          <div>
+            <label
+              for="purchaseFullName"
+              class="block text-sm font-medium text-gray-700"
+              >Nama Lengkap</label
+            >
+            <input
+              id="purchaseFullName"
+              name="fullName"
+              type="text"
+              readonly
+              required
+              class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            />
+          </div>
+          <div>
+            <label
+              for="purchasePhone"
+              class="block text-sm font-medium text-gray-700"
+              >Nomor Telepon</label
+            >
+            <input
+              id="purchasePhone"
+              name="phone"
+              type="tel"
+              readonly
+              required
+              class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            />
+          </div>
+          <div>
+            <label
+              for="purchaseAddress"
+              class="block text-sm font-medium text-gray-700"
+              >Alamat Pengiriman</label
+            >
+            <textarea
+              id="purchaseAddress"
+              name="address"
+              rows="3"
+              readonly
+              required
+              class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            ></textarea>
+          </div>
+          <div>
+            <label
+              for="purchaseQuantity"
+              class="block text-sm font-medium text-gray-700"
+              >Jumlah Pembelian (kg)</label
+            >
+            <input
+              id="purchaseQuantity"
+              name="quantity"
+              type="number"
+              min="1"
+              required
+              class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder="e.g., 5"
+            />
+          </div>
+          <div class="flex justify-end pt-4">
+            <button
+              type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+            >
+              Kirim Pesanan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div
+      id="confirmModal"
+      class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl w-full max-w-sm p-6 text-center"
+      >
+        <h3 id="confirmTitle" class="text-lg font-semibold mb-4">
+          Apakah Anda yakin?
+        </h3>
+        <p id="confirmMessage" class="text-gray-600 mb-6">
+          Aksi ini tidak dapat dibatalkan.
+        </p>
+        <div class="flex justify-center gap-4">
+          <button
+            id="confirmCancelBtn"
+            class="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400"
+          >
+            Batal
+          </button>
+          <button
+            id="confirmOkBtn"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          >
+            Ya, Lanjutkan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- GLOBAL STATE ---
+      let currentUser = null;
+
+      // --- LOCAL DATABASE SIMULATION ---
+      const localDB = {
+        users: [
+          {
+            id: "user0",
+            username: "admin",
+            password: "password123",
+            role: "admin",
+          },
+          {
+            id: "user1",
+            username: "user",
+            password: "user123",
+            role: "user",
+            customerId: "cus1",
+            serviceId: "svc2",
+          },
+        ],
+        notifications: [],
+        fishProducts: [
+          {
+            id: "fish1",
+            name: "Ikan Tuna Segar",
+            price: 55000,
+            stock: 150,
+            image: "https://placehold.co/600x400/3b82f6/ffffff?text=Ikan+Tuna",
+          },
+          {
+            id: "fish2",
+            name: "Ikan Salmon Norwegia",
+            price: 125000,
+            stock: 80,
+            image:
+              "https://placehold.co/600x400/f97316/ffffff?text=Ikan+Salmon",
+          },
+          {
+            id: "fish3",
+            name: "Ikan Tongkol",
+            price: 30000,
+            stock: 250,
+            image:
+              "https://placehold.co/600x400/16a34a/ffffff?text=Ikan+Tongkol",
+          },
+        ],
+        schedules: [
+          {
+            id: "sch1",
+            orderId: "ord1",
+            customerId: "cus1",
+            origin: "Gudang Pusat",
+            destination: "Jl. Pengguna No. 123",
+            departureDate: "2025-07-18",
+            arrivalDate: "",
+            status: "Dijadwalkan",
+          },
+        ],
+        services: [
+          {
+            id: "svc1",
+            name: "Paket Reguler",
+            description: "Pengiriman 3-5 hari kerja",
+            pricePerKg: "10000",
+          },
+          {
+            id: "svc2",
+            name: "Paket Express",
+            description: "Pengiriman 1-2 hari kerja",
+            pricePerKg: "25000",
+          },
+        ],
+        fleet: [
+          {
+            id: "flt1",
+            name: "Truk Pendingin 01",
+            licensePlate: "B 9876 ABC",
+            capacityKg: "5000",
+            status: "Tersedia",
+          },
+        ],
+        customers: [
+          {
+            id: "cus1",
+            name: "User Biasa",
+            phone: "08123456789",
+            address: "Jl. Pengguna No. 123",
+          },
+        ],
+        orders: [
+          {
+            id: "ord1",
+            orderDate: "2025-07-12",
+            customerId: "cus1",
+            productId: "fish1",
+            serviceId: "svc2",
+            jadwalKirim: "2025-07-18",
+            fleetId: "flt1",
+            weightKg: "500",
+            status: "Dikonfirmasi",
+          },
+        ],
+      };
+
+      // --- PAGE/UI STRUCTURE DEFINITIONS ---
+      const pageConfigs = {
+        dashboard: { title: "Dashboard", layout: "dashboard" },
+        profile: { title: "Profil Saya", layout: "profile" },
+        notifications: { title: "Notifikasi", layout: "notifications" },
+        "buy-fish": {
+          title: "Katalog Ikan",
+          collectionName: "fishProducts",
+          layout: "cards",
+          fields: {
+            name: {
+              label: "Nama Produk",
+              type: "text",
+              placeholder: "e.g., Ikan Tuna Segar",
+            },
+            price: {
+              label: "Harga per KG (Rp)",
+              type: "number",
+              placeholder: "55000",
+            },
+            stock: { label: "Stok (kg)", type: "number", placeholder: "150" },
+            image: {
+              label: "URL Gambar",
+              type: "text",
+              placeholder: "https://placehold.co/600x400",
+            },
+          },
+        },
+        "transport-request": {
+          title: "Buat Permintaan Angkut",
+          layout: "form",
+        },
+        schedules: {
+          title: "Jadwal Angkut",
+          collectionName: "schedules",
+          fields: {
+            orderId: { type: "hidden" },
+            customerId: { type: "hidden" },
+            origin: {
+              label: "Asal",
+              type: "text",
+              placeholder: "e.g., Jakarta",
+            },
+            destination: {
+              label: "Tujuan",
+              type: "text",
+              placeholder: "e.g., Surabaya",
+            },
+            departureDate: { label: "Tanggal Berangkat", type: "date" },
+            arrivalDate: { label: "Tanggal Tiba", type: "date" },
+            status: {
+              label: "Status",
+              type: "select",
+              options: [
+                "Menunggu Penjadwalan",
+                "Dijadwalkan",
+                "Dalam Perjalanan",
+                "Selesai",
+                "Dibatalkan",
+              ],
+            },
+          },
+          columns: [
+            "Tgl Berangkat",
+            "Tgl Tiba",
+            "Customer",
+            "Detail Angkutan",
+            "Asal",
+            "Tujuan",
+            "Berat (KG)",
+            "Status",
+          ],
+        },
+        services: {
+          title: "Paket Layanan",
+          collectionName: "services",
+          fields: {
+            name: {
+              label: "Nama Paket",
+              type: "text",
+              placeholder: "e.g., Paket Express",
+            },
+            description: {
+              label: "Deskripsi",
+              type: "textarea",
+              placeholder: "Deskripsi singkat layanan",
+            },
+            pricePerKg: {
+              label: "Harga per KG (Rp)",
+              type: "number",
+              placeholder: "15000",
+            },
+          },
+          columns: ["Nama Paket", "Deskripsi", "Harga/KG"],
+        },
+        fleet: {
+          title: "Data Armada",
+          collectionName: "fleet",
+          fields: {
+            name: {
+              label: "Nama/Tipe Kendaraan",
+              type: "text",
+              placeholder: "e.g., Truk Pendingin A",
+            },
+            licensePlate: {
+              label: "Nomor Polisi",
+              type: "text",
+              placeholder: "B 1234 XYZ",
+            },
+            capacityKg: {
+              label: "Kapasitas (KG)",
+              type: "number",
+              placeholder: "5000",
+            },
+            status: {
+              label: "Status",
+              type: "select",
+              options: ["Tersedia", "Digunakan", "Perawatan"],
+            },
+          },
+          columns: ["Nama Kendaraan", "No. Polisi", "Kapasitas (KG)", "Status"],
+        },
+        customers: {
+          title: "Data Customer",
+          collectionName: "customers",
+          fields: {
+            name: {
+              label: "Nama Customer",
+              type: "text",
+              placeholder: "e.g., PT. Sumber Laut",
+            },
+            phone: {
+              label: "Nomor Telepon",
+              type: "tel",
+              placeholder: "08123456789",
+            },
+            address: {
+              label: "Alamat",
+              type: "textarea",
+              placeholder: "Alamat lengkap customer",
+            },
+          },
+          columns: ["Nama", "Telepon", "Alamat"],
+        },
+        orders: {
+          title: "Data Pesanan",
+          collectionName: "orders",
+          fields: {
+            orderDate: { label: "Tanggal Pesanan", type: "date" },
+            customerId: {
+              label: "Customer",
+              type: "select",
+              dynamic: "customers",
+            },
+            productId: {
+              label: "Produk Ikan",
+              type: "select",
+              dynamic: "buy-fish",
+            },
+            serviceId: {
+              label: "Paket Layanan",
+              type: "select",
+              dynamic: "services",
+            },
+            jadwalKirim: { label: "Jadwal Kirim", type: "date" },
+            fleetId: { label: "Armada", type: "select", dynamic: "fleet" },
+            weightKg: {
+              label: "Berat (KG)",
+              type: "number",
+              placeholder: "100",
+            },
+            status: {
+              label: "Status Pesanan",
+              type: "select",
+              options: [
+                "Menunggu Penjadwalan",
+                "Menunggu",
+                "Dikonfirmasi",
+                "Dikirim",
+                "Diterima",
+                "Dibatalkan",
+              ],
+            },
+          },
+          columns: [
+            "Tgl Pesan",
+            "Customer",
+            "Detail Pesanan",
+            "Layanan",
+            "Jadwal Kirim",
+            "Berat (KG)",
+            "Status",
+          ],
+        },
+      };
+
+      // --- DYNAMIC UI GENERATION ---
+      function createPageUI(pageKey, isAdmin = true) {
+        const config = pageConfigs[pageKey];
+        const parentSelector = isAdmin
+          ? "#admin-app-screen"
+          : "#user-app-screen";
+        const containerId = isAdmin
+          ? `page-${pageKey}`
+          : `page-user-${pageKey}`;
+        const container = document.querySelector(
+          `${parentSelector} #${containerId}`
+        );
+        if (!container) return;
+
+        let content = "";
+        if (config.layout === "dashboard") {
+          return;
+        } else if (config.layout === "profile") {
+          content = `<div id="user-profile-content" class="bg-white p-8 rounded-lg shadow-md"></div>`;
+        } else if (config.layout === "notifications") {
+          content = `<div id="notification-list-${
+            isAdmin ? "admin" : "user"
+          }" class="space-y-4"></div>`;
+        } else if (config.layout === "form") {
+          content = `
+                    <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">${config.title}</h2>
+                        <form id="transport-request-form" class="space-y-4">
+                            <div>
+                                <label for="tr-origin" class="block text-sm font-medium text-gray-700">Lokasi Penjemputan</label>
+                                <input id="tr-origin" name="origin" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Pelabuhan Muara Angke">
+                            </div>
+                             <div>
+                                <label for="tr-destination" class="block text-sm font-medium text-gray-700">Lokasi Tujuan</label>
+                                <input id="tr-destination" name="destination" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Pasar Ikan Cirebon">
+                            </div>
+                             <div>
+                                <label for="tr-fishType" class="block text-sm font-medium text-gray-700">Jenis Ikan</label>
+                                <input id="tr-fishType" name="fishType" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Ikan Kembung">
+                            </div>
+                             <div>
+                                <label for="tr-weight" class="block text-sm font-medium text-gray-700">Perkiraan Berat (kg)</label>
+                                <input id="tr-weight" name="weight" type="number" min="1" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., 100">
+                            </div>
+                             <div class="flex justify-end pt-4">
+                                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Kirim Permintaan</button>
+                            </div>
+                        </form>
+                    </div>
+                `;
+        } else if (config.layout === "cards") {
+          content = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold">${config.title}</h2>
+                        ${
+                          isAdmin
+                            ? `<button id="add-${pageKey}-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>Tambah Produk
+                        </button>`
+                            : ""
+                        }
+                    </div>
+                    <div id="${pageKey}-card-container-${
+            isAdmin ? "admin" : "user"
+          }" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                `;
+        } else if (isAdmin) {
+          content = `
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-xl font-semibold">${
+                              config.title
+                            }</h2>
+                            <button id="add-${pageKey}-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Tambah Data
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full table-auto text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        ${config.columns
+                                          .map(
+                                            (col) =>
+                                              `<th scope="col" class="px-6 py-3">${col}</th>`
+                                          )
+                                          .join("")}
+                                        <th scope="col" class="px-6 py-3 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="${pageKey}-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+        }
+        container.innerHTML = content;
+        if (isAdmin && config.fields) {
+          const addBtn = container.querySelector(`#add-${pageKey}-btn`);
+          if (addBtn)
+            addBtn.addEventListener("click", () => openFormModal(pageKey));
+        }
+      }
+
+      function renderAllPages() {
+        Object.keys(pageConfigs).forEach((key) => {
+          renderPageContent(key, true);
+          if (
+            [
+              "buy-fish",
+              "notifications",
+              "profile",
+              "transport-request",
+            ].includes(key)
+          ) {
+            renderPageContent(key, false);
+          }
+        });
+        updateNotificationBadges();
+      }
+
+      // --- MODAL & FORM HANDLING ---
+      const formModal = document.getElementById("formModal");
+      const modalTitle = document.getElementById("modalTitle");
+      const dataForm = document.getElementById("dataForm");
+      const closeModalBtn = document.getElementById("closeModalBtn");
+      const purchaseModal = document.getElementById("purchaseModal");
+      const closePurchaseModalBtn = document.getElementById(
+        "closePurchaseModalBtn"
+      );
+      const purchaseForm = document.getElementById("purchaseForm");
+
+      closeModalBtn.addEventListener("click", () =>
+        formModal.classList.add("hidden")
+      );
+      closePurchaseModalBtn.addEventListener("click", () =>
+        purchaseModal.classList.add("hidden")
+      );
+
+      function openFormModal(pageKey, docId = null) {
+        const config = pageConfigs[pageKey];
+        modalTitle.textContent = docId
+          ? `Edit ${config.title}`
+          : `Tambah ${config.title}`;
+        dataForm.innerHTML = "";
+        dataForm.dataset.pageKey = pageKey;
+        dataForm.dataset.docId = docId || "";
+
+        let formHtml = "";
+        for (const [key, field] of Object.entries(config.fields)) {
+          if (field.type === "hidden") {
+            formHtml += `<input type="hidden" id="${key}" name="${key}">`;
+          } else if (field.type === "select") {
+            let optionsHtml = "";
+            if (field.dynamic) {
+              const dynamicOptions = getDynamicOptions(field.dynamic);
+              optionsHtml = dynamicOptions
+                .map((opt) => `<option value="${opt.id}">${opt.name}</option>`)
+                .join("");
+            } else {
+              optionsHtml = field.options
+                .map((opt) => `<option value="${opt}">${opt}</option>`)
+                .join("");
+            }
+            formHtml += `<div><label for="${key}" class="block text-sm font-medium text-gray-700">${field.label}</label><select id="${key}" name="${key}" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"><option value="">-- Pilih ${field.label} --</option>${optionsHtml}</select></div>`;
+          } else if (field.type === "textarea") {
+            formHtml += `<div><label for="${key}" class="block text-sm font-medium text-gray-700">${
+              field.label
+            }</label><textarea id="${key}" name="${key}" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="${
+              field.placeholder || ""
+            }"></textarea></div>`;
+          } else {
+            formHtml += `<div><label for="${key}" class="block text-sm font-medium text-gray-700">${
+              field.label
+            }</label><input type="${
+              field.type
+            }" id="${key}" name="${key}" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="${
+              field.placeholder || ""
+            }"></div>`;
+          }
+        }
+        formHtml += `<div class="flex justify-end pt-4"><button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">Simpan</button></div>`;
+        dataForm.innerHTML = formHtml;
+
+        if (pageKey === "orders") {
+          const customerSelect = dataForm.elements.customerId;
+          const serviceSelect = dataForm.elements.serviceId;
+          if (customerSelect && serviceSelect) {
+            customerSelect.addEventListener("change", () => {
+              const selectedCustomerId = customerSelect.value;
+              if (selectedCustomerId) {
+                const user = localDB.users.find(
+                  (u) => u.customerId === selectedCustomerId
+                );
+                if (user && user.serviceId) {
+                  serviceSelect.value = user.serviceId;
+                } else {
+                  serviceSelect.value = ""; // Reset if no default service found
+                }
+              }
+            });
+          }
+        }
+
+        if (docId) {
+          const data = localDB[config.collectionName].find(
+            (item) => item.id === docId
+          );
+          if (data) {
+            Object.keys(config.fields).forEach((key) => {
+              if (dataForm.elements[key]) {
+                dataForm.elements[key].value = data[key] || "";
+              }
+            });
+          }
+        } else {
+          if (dataForm.elements.orderDate)
+            dataForm.elements.orderDate.valueAsDate = new Date();
+          if (dataForm.elements.departureDate)
+            dataForm.elements.departureDate.valueAsDate = new Date();
+        }
+
+        formModal.classList.remove("hidden");
+      }
+
+      function openPurchaseForm(productId, productName) {
+        purchaseForm.reset();
+        document.getElementById("purchaseProductId").value = productId;
+        document.getElementById("purchaseProductName").value = productName;
+
+        if (currentUser && currentUser.customerId) {
+          const customerData = localDB.customers.find(
+            (c) => c.id === currentUser.customerId
+          );
+          if (customerData) {
+            document.getElementById("purchaseFullName").value =
+              customerData.name;
+            document.getElementById("purchasePhone").value = customerData.phone;
+            document.getElementById("purchaseAddress").value =
+              customerData.address;
+          }
+        }
+
+        purchaseModal.classList.remove("hidden");
+      }
+
+      function getDynamicOptions(collectionKey) {
+        const config = pageConfigs[collectionKey];
+        if (!config) return [];
+        const data = localDB[config.collectionName];
+        return data.map((doc) => {
+          let name = doc.name;
+          if (collectionKey === "schedules") {
+            name = `${doc.origin} -> ${doc.destination} (${doc.departureDate})`;
+          }
+          return { id: doc.id, name: name };
+        });
+      }
+
+      dataForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const pageKey = e.target.dataset.pageKey;
+        const docId = e.target.dataset.docId;
+        const config = pageConfigs[pageKey];
+        const collectionName = config.collectionName;
+
+        const formData = new FormData(e.target);
+        const data = {};
+        for (const [key, value] of formData.entries()) {
+          data[key] = value;
+        }
+
+        if (docId) {
+          const index = localDB[collectionName].findIndex(
+            (item) => item.id === docId
+          );
+          if (index > -1) {
+            const originalData = { ...localDB[collectionName][index] }; // Make a copy
+            const updatedData = { ...originalData, ...data };
+            localDB[collectionName][index] = updatedData;
+
+            // --- SYNC LOGIC ---
+            if (pageKey === "orders") {
+              const schedule = localDB.schedules.find(
+                (s) => s.orderId === docId
+              );
+              if (schedule) {
+                // If a schedule already exists, update it
+                const scheduleIndex = localDB.schedules.findIndex(
+                  (s) => s.id === schedule.id
+                );
+                localDB.schedules[scheduleIndex].departureDate =
+                  updatedData.jadwalKirim;
+              } else if (!originalData.jadwalKirim && updatedData.jadwalKirim) {
+                // If a schedule is newly created
+                const customer = localDB.customers.find(
+                  (c) => c.id === updatedData.customerId
+                );
+                const newSchedule = {
+                  id: "sch" + Date.now(),
+                  orderId: docId,
+                  customerId: updatedData.customerId,
+                  origin: updatedData.origin || "Gudang Pusat",
+                  destination:
+                    updatedData.destination ||
+                    (customer ? customer.address : "Alamat Customer"),
+                  departureDate: updatedData.jadwalKirim,
+                  arrivalDate: "",
+                  status: "Dijadwalkan",
+                };
+                localDB.schedules.push(newSchedule);
+              }
+
+              if (
+                originalData.status !== data.status &&
+                (data.status === "Dikonfirmasi" || data.status === "Dikirim")
+              ) {
+                const customer = localDB.customers.find(
+                  (c) => c.id === data.customerId
+                );
+                const user = localDB.users.find(
+                  (u) => u.customerId === data.customerId
+                );
+                if (customer && user) {
+                  createNotification(
+                    "order_shipped",
+                    `Pesanan Anda untuk ${
+                      customer.name
+                    } telah ${data.status.toLowerCase()}.`,
+                    "user",
+                    { orderId: docId }
+                  );
+                }
+              }
+            } else if (pageKey === "schedules") {
+              const order = localDB.orders.find(
+                (o) => o.id === updatedData.orderId
+              );
+              if (order) {
+                const orderIndex = localDB.orders.findIndex(
+                  (o) => o.id === order.id
+                );
+                if (orderIndex > -1) {
+                  localDB.orders[orderIndex].jadwalKirim =
+                    updatedData.departureDate;
+                  if (updatedData.status === "Dalam Perjalanan")
+                    localDB.orders[orderIndex].status = "Dikirim";
+                  else if (updatedData.status === "Selesai")
+                    localDB.orders[orderIndex].status = "Diterima";
+                  else if (updatedData.status === "Dibatalkan")
+                    localDB.orders[orderIndex].status = "Dibatalkan";
+                }
+              }
+            }
+          }
+        } else {
+          data.id = "id" + Date.now();
+          localDB[collectionName].push(data);
+        }
+
+        formModal.classList.add("hidden");
+        renderAllPages();
+      });
+
+      purchaseForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const newOrderId = "ord" + Date.now();
+
+        const newOrder = {
+          id: newOrderId,
+          orderDate: new Date().toISOString().split("T")[0],
+          customerId: currentUser.customerId,
+          productId: formData.get("productId"),
+          serviceId: currentUser.serviceId,
+          jadwalKirim: null,
+          fleetId: null,
+          weightKg: formData.get("quantity"),
+          status: "Menunggu",
+        };
+        localDB.orders.push(newOrder);
+
+        const notificationMessage = `Pesanan baru dari ${
+          currentUser.username
+        } untuk ${formData.get("quantity")} kg ${
+          document.getElementById("purchaseProductName").value
+        }.`;
+        createNotification("new_order", notificationMessage, "admin", {
+          orderId: newOrderId,
+          customerName: currentUser.username,
+        });
+
+        purchaseModal.classList.add("hidden");
+        await showConfirmDialog({
+          title: "Pesanan Terkirim!",
+          message:
+            "Terima kasih, pesanan Anda telah kami terima dan akan segera diproses.",
+          okText: "Selesai",
+        });
+        renderAllPages();
+      });
+
+      // --- CONFIRMATION MODAL ---
+      const confirmModal = document.getElementById("confirmModal");
+      const confirmTitle = document.getElementById("confirmTitle");
+      const confirmMessage = document.getElementById("confirmMessage");
+      const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+      const confirmOkBtn = document.getElementById("confirmOkBtn");
+
+      let confirmResolver = null;
+      confirmCancelBtn.addEventListener("click", () => {
+        confirmModal.classList.add("hidden");
+        if (confirmResolver) confirmResolver(false);
+      });
+      confirmOkBtn.addEventListener("click", () => {
+        confirmModal.classList.add("hidden");
+        if (confirmResolver) confirmResolver(true);
+      });
+
+      function showConfirmDialog({ title, message, okText }) {
+        confirmTitle.textContent = title || "Apakah Anda yakin?";
+        confirmMessage.textContent =
+          message || "Aksi ini tidak dapat dibatalkan.";
+        confirmOkBtn.textContent = okText || "Ya, Lanjutkan";
+        return new Promise((resolve) => {
+          confirmResolver = resolve;
+          confirmModal.classList.remove("hidden");
+        });
+      }
+
+      // --- NOTIFICATION SYSTEM ---
+      function createNotification(type, message, forRole, data = {}) {
+        const notification = {
+          id: "notif" + Date.now(),
+          type: type,
+          message: message,
+          forRole: forRole,
+          data: data,
+          read: false,
+          timestamp: new Date(),
+        };
+        localDB.notifications.push(notification);
+        updateNotificationBadges();
+      }
+
+      function updateNotificationBadges() {
+        const adminBadge = document.getElementById("admin-notification-badge");
+        const userBadge = document.getElementById("user-notification-badge");
+
+        const unreadAdmin = localDB.notifications.filter(
+          (n) => n.forRole === "admin" && !n.read
+        ).length;
+        const unreadUser = localDB.notifications.filter(
+          (n) => n.forRole === "user" && !n.read
+        ).length;
+
+        adminBadge.textContent = unreadAdmin;
+        userBadge.textContent = unreadUser;
+
+        unreadAdmin > 0
+          ? adminBadge.classList.remove("hidden")
+          : adminBadge.classList.add("hidden");
+        unreadUser > 0
+          ? userBadge.classList.remove("hidden")
+          : userBadge.classList.add("hidden");
+      }
+
+      // --- DATA HANDLING (LOCAL) ---
+      function renderPageContent(pageKey, isAdmin = true) {
+        const config = pageConfigs[pageKey];
+        if (!config) return;
+
+        if (config.layout === "profile" && !isAdmin) {
+          const profileContainer = document.getElementById(
+            "user-profile-content"
+          );
+          if (!profileContainer) return;
+
+          if (!currentUser || !currentUser.customerId) {
+            profileContainer.innerHTML = `<p class="text-gray-500">Data profil tidak ditemukan.</p>`;
+            return;
+          }
+
+          const customerData = localDB.customers.find(
+            (c) => c.id === currentUser.customerId
+          );
+          const serviceData = localDB.services.find(
+            (s) => s.id === currentUser.serviceId
+          );
+
+          if (!customerData) {
+            profileContainer.innerHTML = `<p class="text-gray-500">Data pelanggan tidak ditemukan.</p>`;
+            return;
+          }
+
+          profileContainer.innerHTML = `
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Profil Saya</h2>
+                    <div class="space-y-4 text-left">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-500">Username</label>
+                            <p class="text-lg text-gray-900">${
+                              currentUser.username
+                            }</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-500">Nama Lengkap</label>
+                            <p class="text-lg text-gray-900">${
+                              customerData.name
+                            }</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-500">Nomor Telepon</label>
+                            <p class="text-lg text-gray-900">${
+                              customerData.phone
+                            }</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-500">Alamat</label>
+                            <p class="text-lg text-gray-900">${
+                              customerData.address
+                            }</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <label class="block text-sm font-medium text-gray-500">Paket Layanan</label>
+                            <p class="text-lg text-gray-900">${
+                              serviceData ? serviceData.name : "Belum dipilih"
+                            }</p>
+                        </div>
+                    </div>
+                `;
+        } else if (config.layout === "notifications") {
+          const listId = `notification-list-${isAdmin ? "admin" : "user"}`;
+          const listContainer = document.getElementById(listId);
+          if (!listContainer) return;
+
+          const role = isAdmin ? "admin" : "user";
+          const notifications = localDB.notifications
+            .filter((n) => n.forRole === role)
+            .sort((a, b) => b.timestamp - a.timestamp);
+
+          if (notifications.length === 0) {
+            listContainer.innerHTML =
+              '<div class="bg-white p-6 rounded-lg shadow-md text-center text-gray-500">Tidak ada notifikasi.</div>';
+            return;
+          }
+
+          listContainer.innerHTML = notifications
+            .map((n) => {
+              const isNewOrder = n.type === "new_order" && !n.read;
+              return `
+                        <div class="bg-white p-4 rounded-lg shadow-md flex items-center justify-between ${
+                          n.read ? "opacity-60" : ""
+                        }">
+                            <div class="flex items-center">
+                                <i class="fas ${
+                                  n.type === "new_order"
+                                    ? "fa-receipt text-blue-500"
+                                    : "fa-truck-fast text-green-500"
+                                } fa-2x mr-4"></i>
+                                <div>
+                                    <p class="text-gray-800">${n.message}</p>
+                                    <p class="text-xs text-gray-500">${n.timestamp.toLocaleString(
+                                      "id-ID"
+                                    )}</p>
+                                </div>
+                            </div>
+                            ${
+                              isNewOrder
+                                ? `<button class="process-order-btn bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-sm" data-notification-id="${n.id}">Proses Pengiriman</button>`
+                                : ""
+                            }
+                        </div>
+                    `;
+            })
+            .join("");
+        } else if (config.layout === "cards") {
+          const cardContainerId = `${pageKey}-card-container-${
+            isAdmin ? "admin" : "user"
+          }`;
+          const cardContainer = document.getElementById(cardContainerId);
+          if (!cardContainer) return;
+          const dataCollection = localDB[config.collectionName];
+
+          if (!dataCollection || dataCollection.length === 0) {
+            cardContainer.innerHTML = `<p class="text-gray-500 col-span-full text-center">Tidak ada produk tersedia.</p>`;
+            return;
+          }
+
+          let cardsHtml = "";
+          dataCollection.forEach((item) => {
+            cardsHtml += `
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+                            <img src="${item.image}" alt="${
+              item.name
+            }" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/ffffff?text=Gambar+Rusak';">
+                            <div class="p-4 flex flex-col flex-grow">
+                                <h3 class="text-lg font-semibold text-gray-800">${
+                                  item.name
+                                }</h3>
+                                <p class="text-sm text-gray-500 mt-1">Stok: ${
+                                  item.stock
+                                } kg</p>
+                                <p class="text-xl font-bold text-blue-600 mt-2">Rp ${Number(
+                                  item.price
+                                ).toLocaleString("id-ID")}</p>
+                                <div class="mt-auto pt-4">
+                                    <div class="flex justify-between items-center">
+                                        <button class="buy-now-btn bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 text-sm font-semibold flex-grow" data-id="${
+                                          item.id
+                                        }" data-name="${item.name}">
+                                            <i class="fas fa-cart-plus mr-2"></i>Beli
+                                        </button>
+                                        ${
+                                          isAdmin
+                                            ? `<div class="ml-2 flex">
+                                            <button class="edit-btn text-blue-600 hover:text-blue-800 p-2" data-page-key="${pageKey}" data-doc-id="${item.id}"><i class="fas fa-edit"></i></button>
+                                            <button class="delete-btn text-red-600 hover:text-red-800 p-2" data-page-key="${pageKey}" data-doc-id="${item.id}"><i class="fas fa-trash"></i></button>
+                                        </div>`
+                                            : ""
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+          });
+          cardContainer.innerHTML = cardsHtml;
+        } else if (isAdmin && config.collectionName) {
+          const tableBody = document.getElementById(`${pageKey}-table-body`);
+          if (!tableBody) return;
+          const dataCollection = localDB[config.collectionName];
+
+          if (!dataCollection || dataCollection.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="100%" class="text-center p-4">Tidak ada data.</td></tr>`;
+            updateDashboardCount(pageKey, 0);
+            return;
+          }
+
+          updateDashboardCount(pageKey, dataCollection.length);
+
+          const customersMap = new Map(localDB.customers.map((c) => [c.id, c]));
+          const servicesMap = new Map(localDB.services.map((s) => [s.id, s]));
+          const fishProductsMap = new Map(
+            localDB.fishProducts.map((p) => [p.id, p])
+          );
+
+          let rowsHtml = "";
+          dataCollection.forEach((data) => {
+            const docId = data.id;
+            let rowCells = "";
+            let actionButtonsHtml = "";
+
+            if (pageKey === "schedules") {
+              const customerName =
+                customersMap.get(data.customerId)?.name || "N/A";
+              const order = localDB.orders.find((o) => o.id === data.orderId);
+              const orderDetail = order
+                ? order.productId
+                  ? fishProductsMap.get(order.productId)?.name
+                  : `Angkut: ${order.fishType}`
+                : `Angkut: ${data.fishType}`;
+              const weightKg = order ? order.weightKg : data.weightKg;
+              rowCells = `<td class="px-6 py-4">${
+                data.departureDate || ""
+              }</td><td class="px-6 py-4">${
+                data.arrivalDate || ""
+              }</td><td class="px-6 py-4">${customerName}</td><td class="px-6 py-4">${orderDetail}</td><td class="px-6 py-4">${
+                data.origin || ""
+              }</td><td class="px-6 py-4">${
+                data.destination || ""
+              }</td><td class="px-6 py-4">${
+                weightKg || 0
+              } KG</td><td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                data.status
+              )}">${data.status || ""}</span></td>`;
+            } else if (pageKey === "services") {
+              rowCells = `<td class="px-6 py-4">${
+                data.name || ""
+              }</td><td class="px-6 py-4 truncate max-w-xs">${
+                data.description || ""
+              }</td><td class="px-6 py-4">Rp ${Number(
+                data.pricePerKg || 0
+              ).toLocaleString("id-ID")}</td>`;
+            } else if (pageKey === "fleet") {
+              rowCells = `<td class="px-6 py-4">${
+                data.name || ""
+              }</td><td class="px-6 py-4">${
+                data.licensePlate || ""
+              }</td><td class="px-6 py-4">${
+                data.capacityKg || 0
+              } KG</td><td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                data.status
+              )}">${data.status || ""}</span></td>`;
+            } else if (pageKey === "customers") {
+              rowCells = `<td class="px-6 py-4">${
+                data.name || ""
+              }</td><td class="px-6 py-4">${
+                data.phone || ""
+              }</td><td class="px-6 py-4 truncate max-w-xs">${
+                data.address || ""
+              }</td>`;
+            } else if (pageKey === "orders") {
+              const customerName =
+                customersMap.get(data.customerId)?.name || "N/A";
+              const detailPesanan = data.productId
+                ? fishProductsMap.get(data.productId)?.name
+                : `Angkut: ${data.fishType}`;
+              const serviceName =
+                servicesMap.get(data.serviceId)?.name || "N/A";
+
+              if (
+                data.status === "Menunggu Penjadwalan" ||
+                data.status === "Menunggu"
+              ) {
+                actionButtonsHtml = `<button class="edit-btn bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-sm flex items-center" data-page-key="${pageKey}" data-doc-id="${docId}">
+                                                <i class="fas fa-calendar-alt mr-2"></i>Jadwalkan
+                                            </button>`;
+              } else {
+                actionButtonsHtml = `<button class="edit-btn text-blue-600 hover:text-blue-800 mr-2" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-edit"></i></button>
+                                             <button class="delete-btn text-red-600 hover:text-red-800" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-trash"></i></button>`;
+              }
+
+              rowCells = `<td class="px-6 py-4">${
+                data.orderDate || ""
+              }</td><td class="px-6 py-4">${customerName}</td><td class="px-6 py-4">${detailPesanan}</td><td class="px-6 py-4">${
+                serviceName || "Belum diatur"
+              }</td><td class="px-6 py-4">${
+                data.jadwalKirim || "Belum diatur"
+              }</td><td class="px-6 py-4">${
+                data.weightKg || 0
+              } KG</td><td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                data.status
+              )}">${data.status || ""}</span></td>`;
+            }
+
+            if (!actionButtonsHtml) {
+              actionButtonsHtml = `
+                            <button class="edit-btn text-blue-600 hover:text-blue-800 mr-2" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-edit"></i></button>
+                            <button class="delete-btn text-red-600 hover:text-red-800" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-trash"></i></button>
+                         `;
+            }
+
+            rowsHtml += `<tr class="bg-white border-b hover:bg-gray-50">${rowCells}<td class="px-6 py-4 text-right">${actionButtonsHtml}</td></tr>`;
+          });
+          tableBody.innerHTML = rowsHtml;
+        }
+      }
+
+      // --- EVENT DELEGATION FOR ACTIONS ---
+      document.body.addEventListener("click", async (e) => {
+        const editBtn = e.target.closest(".edit-btn");
+        const deleteBtn = e.target.closest(".delete-btn");
+        const buyBtn = e.target.closest(".buy-now-btn");
+        const processBtn = e.target.closest(".process-order-btn");
+
+        if (editBtn) {
+          const { pageKey, docId } = editBtn.dataset;
+          openFormModal(pageKey, docId);
+        }
+
+        if (deleteBtn) {
+          const { pageKey, docId } = deleteBtn.dataset;
+          const confirmed = await showConfirmDialog({
+            title: "Konfirmasi Hapus",
+            message: "Data ini akan dihapus secara permanen.",
+            okText: "Ya, Hapus",
+          });
+          if (confirmed) {
+            const collectionName = pageConfigs[pageKey].collectionName;
+            const index = localDB[collectionName].findIndex(
+              (item) => item.id === docId
+            );
+            if (index > -1) {
+              const itemToDelete = localDB[collectionName][index];
+              if (pageKey === "orders") {
+                const scheduleIndex = localDB.schedules.findIndex(
+                  (s) => s.orderId === itemToDelete.id
+                );
+                if (scheduleIndex > -1) {
+                  localDB.schedules.splice(scheduleIndex, 1);
+                }
+              } else if (pageKey === "schedules") {
+                const orderIndex = localDB.orders.findIndex(
+                  (o) => o.id === itemToDelete.orderId
+                );
+                if (orderIndex > -1) {
+                  localDB.orders[orderIndex].jadwalKirim = null;
+                  localDB.orders[orderIndex].status = localDB.orders[orderIndex]
+                    .productId
+                    ? "Menunggu"
+                    : "Menunggu Penjadwalan";
+                }
+              }
+              localDB[collectionName].splice(index, 1);
+            }
+            renderAllPages();
+          }
+        }
+
+        if (buyBtn) {
+          const { id, name } = buyBtn.dataset;
+          openPurchaseForm(id, name);
+        }
+
+        if (processBtn) {
+          const notifId = processBtn.dataset.notificationId;
+          const notification = localDB.notifications.find(
+            (n) => n.id === notifId
+          );
+          if (
+            notification &&
+            (notification.data.orderId || notification.data.scheduleId)
+          ) {
+            notification.read = true;
+            if (notification.data.orderId) {
+              openFormModal("orders", notification.data.orderId);
+            } else if (notification.data.scheduleId) {
+              openFormModal("schedules", notification.data.scheduleId);
+            }
+            updateNotificationBadges();
+            renderPageContent("notifications", true);
+          }
+        }
+      });
+
+      // --- DASHBOARD & HELPERS ---
+      function updateDashboardCount(pageKey, count) {
+        const elementIds = {
+          orders: "total-orders",
+          customers: "total-customers",
+          fleet: "total-fleet",
+          schedules: "total-schedules",
+        };
+        if (pageKey && elementIds[pageKey]) {
+          const element = document.getElementById(elementIds[pageKey]);
+          if (element) {
+            element.textContent = count;
+          }
+        }
+      }
+
+      function getStatusClass(status) {
+        status = status ? status.toLowerCase() : "";
+        if (["selesai", "diterima", "tersedia"].includes(status))
+          return "bg-green-100 text-green-800";
+        if (
+          [
+            "dalam perjalanan",
+            "digunakan",
+            "dikonfirmasi",
+            "sedang diproses",
+          ].some((s) => status.includes(s))
+        )
+          return "bg-yellow-100 text-yellow-800";
+        if (["dibatalkan", "perawatan"].includes(status))
+          return "bg-red-100 text-red-800";
+        return "bg-blue-100 text-blue-800";
+      }
+
+      // --- NAVIGATION ---
+      function switchPage(pageId, isAdmin = true) {
+        const pageContents = document.querySelectorAll(
+          isAdmin ? ".page-content" : ".page-content-user"
+        );
+        pageContents.forEach((page) => page.classList.add("hidden"));
+
+        const pageToShowId = isAdmin ? `page-${pageId}` : `page-user-${pageId}`;
+        const elementToShow = document.getElementById(pageToShowId);
+
+        if (elementToShow) {
+          elementToShow.classList.remove("hidden");
+        } else {
+          console.error(`Error: Element with ID '${pageToShowId}' not found.`);
+          return;
+        }
+
+        const sidebar = document.getElementById(
+          isAdmin ? "admin-sidebar" : "user-sidebar"
+        );
+        sidebar
+          .querySelectorAll(".sidebar-item")
+          .forEach((item) => item.classList.remove("active"));
+        const activeItem = sidebar.querySelector(
+          `.sidebar-item[data-page="${pageId}"]`
+        );
+        if (activeItem) activeItem.classList.add("active");
+
+        const pageTitleEl = document.getElementById(
+          isAdmin ? "admin-page-title" : "user-page-title"
+        );
+
+        const adminPageTitles = {
+          dashboard: "Dashboard",
+          notifications: "Notifikasi",
+          "buy-fish": "Katalog Ikan",
+          schedules: "Jadwal Angkut",
+          services: "Paket Layanan",
+          fleet: "Data Armada",
+          customers: "Data Customer",
+          orders: "Data Pesanan",
+        };
+        const userPageTitles = {
+          dashboard: "Home",
+          profile: "Profil Saya",
+          notifications: "Notifikasi",
+          "buy-fish": "Beli Ikan",
+          "transport-request": "Buat Permintaan Angkut",
+        };
+
+        if (isAdmin) {
+          pageTitleEl.textContent = adminPageTitles[pageId] || "Page Not Found";
+        } else {
+          pageTitleEl.textContent = userPageTitles[pageId] || "Page Not Found";
+        }
+      }
+
+      document
+        .querySelectorAll("#admin-sidebar .sidebar-item")
+        .forEach((item) => {
+          item.addEventListener("click", (e) => {
+            e.preventDefault();
+            switchPage(item.dataset.page, true);
+          });
+        });
+      document
+        .querySelectorAll("#user-sidebar .sidebar-item")
+        .forEach((item) => {
+          item.addEventListener("click", (e) => {
+            e.preventDefault();
+            switchPage(item.dataset.page, false);
+          });
+        });
+
+      // --- APP INITIALIZATION ---
+      function populateRegisterServiceOptions() {
+        const selectEl = document.getElementById("register-service");
+        if (!selectEl) return;
+        selectEl.innerHTML = '<option value="">-- Pilih Paket --</option>';
+        localDB.services.forEach((service) => {
+          const option = document.createElement("option");
+          option.value = service.id;
+          option.textContent = service.name;
+          selectEl.appendChild(option);
+        });
+      }
+
+      function initializeAppLogic() {
+        Object.keys(pageConfigs).forEach((key) => {
+          if (pageConfigs[key].layout !== "dashboard") {
+            createPageUI(key, true);
+            if (
+              [
+                "buy-fish",
+                "notifications",
+                "profile",
+                "transport-request",
+              ].includes(key)
+            ) {
+              createPageUI(key, false);
+            }
+          }
+        });
+        populateRegisterServiceOptions();
+        renderAllPages();
+        switchPage("dashboard", true);
+        switchPage("dashboard", false);
+
+        const transportForm = document.getElementById("transport-request-form");
+        if (transportForm) {
+          transportForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const newScheduleId = "sch" + Date.now();
+            const newSchedule = {
+              id: newScheduleId,
+              orderId: null, // This is a transport request, not a product order
+              customerId: currentUser.customerId,
+              fishType: formData.get("fishType"),
+              origin: formData.get("origin"),
+              destination: formData.get("destination"),
+              weightKg: formData.get("weight"),
+              departureDate: null,
+              arrivalDate: null,
+              status: "Menunggu Penjadwalan",
+            };
+            localDB.schedules.push(newSchedule);
+
+            const notifMsg = `Permintaan angkut baru dari ${currentUser.username} (${newSchedule.origin} -> ${newSchedule.destination}).`;
+            createNotification("new_order", notifMsg, "admin", {
+              scheduleId: newScheduleId,
+              customerName: currentUser.username,
+            });
+
+            await showConfirmDialog({
+              title: "Permintaan Terkirim!",
+              message:
+                "Permintaan Anda telah kami terima dan akan segera diproses oleh admin.",
+              okText: "Selesai",
+            });
+
+            e.target.reset();
+            renderAllPages();
+          });
+        }
+      }
+
+      // --- AUTHENTICATION LOGIC ---
+      const authScreen = document.getElementById("auth-screen");
+      const loginContainer = document.getElementById("login-container");
+      const registerContainer = document.getElementById("register-container");
+      const adminAppScreen = document.getElementById("admin-app-screen");
+      const userAppScreen = document.getElementById("user-app-screen");
+      const loginForm = document.getElementById("login-form");
+      const registerForm = document.getElementById("register-form");
+      const loginError = document.getElementById("login-error");
+      const registerError = document.getElementById("register-error");
+
+      document
+        .getElementById("show-register-link")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          loginContainer.classList.add("hidden");
+          registerContainer.classList.remove("hidden");
+        });
+
+      document
+        .getElementById("show-login-link")
+        .addEventListener("click", (e) => {
+          e.preventDefault();
+          registerContainer.classList.add("hidden");
+          loginContainer.classList.remove("hidden");
+        });
+
+      loginForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = e.target.username.value;
+        const password = e.target.password.value;
+
+        const user = localDB.users.find(
+          (u) => u.username === username && u.password === password
+        );
+
+        if (user) {
+          currentUser = user;
+          authScreen.classList.add("hidden");
+          if (user.role === "admin") {
+            adminAppScreen.classList.remove("hidden");
+          } else {
+            userAppScreen.classList.remove("hidden");
+            document.getElementById("loggedInUsername").textContent =
+              user.username;
+            renderPageContent("profile", false); // Re-render profile page on login
+          }
+          loginError.classList.add("hidden");
+        } else {
+          loginError.classList.remove("hidden");
+        }
+        e.target.password.value = "";
+      });
+
+      registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const username = formData.get("username");
+        const password = formData.get("password");
+        const fullName = formData.get("fullName");
+        const phone = formData.get("phone");
+        const address = formData.get("address");
+        const serviceId = formData.get("serviceId");
+
+        registerError.classList.add("hidden");
+
+        if (localDB.users.some((u) => u.username === username)) {
+          registerError.textContent =
+            "Username sudah digunakan. Silakan pilih yang lain.";
+          registerError.classList.remove("hidden");
+          return;
+        }
+
+        const newCustomerId = "cus" + Date.now();
+        const newCustomer = {
+          id: newCustomerId,
+          name: fullName,
+          phone,
+          address,
+        };
+        localDB.customers.push(newCustomer);
+
+        const newUser = {
+          id: "user" + Date.now(),
+          username,
+          password,
+          role: "user",
+          customerId: newCustomerId,
+          serviceId: serviceId,
+        };
+        localDB.users.push(newUser);
+
+        await showConfirmDialog({
+          title: "Registrasi Berhasil!",
+          message: "Akun Anda telah berhasil dibuat. Silakan login.",
+          okText: "OK",
+        });
+
+        registerContainer.classList.add("hidden");
+        loginContainer.classList.remove("hidden");
+        registerForm.reset();
+        renderAllPages();
+      });
+
+      document.querySelectorAll(".logout-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentUser = null;
+          adminAppScreen.classList.add("hidden");
+          userAppScreen.classList.add("hidden");
+          authScreen.classList.remove("hidden");
+          loginForm.reset();
+          registerForm.reset();
+        });
+      });
+
+      // --- START THE APP ---
+      document.addEventListener("DOMContentLoaded", initializeAppLogic);
+    </script>
+  </body>
+</html>
