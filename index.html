@@ -82,7 +82,7 @@
                   type="text"
                   required
                   class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="admin atau user"
+                  placeholder="admin, user, atau owner"
                 />
               </div>
               <div>
@@ -412,6 +412,65 @@
       </div>
     </div>
 
+    <!-- Owner App Screen (Initially Hidden) -->
+    <div id="owner-app-screen" class="hidden">
+      <div class="relative min-h-screen md:flex">
+        <!-- Sidebar -->
+        <div
+          id="owner-sidebar"
+          class="bg-gray-900 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out z-30 flex flex-col"
+        >
+          <div class="px-4 border-b border-gray-700 pb-4 flex items-center">
+            <i class="fas fa-crown fa-2x mr-3 text-yellow-400"></i>
+            <h2 class="font-bold text-xl">IKAN-GO (Owner)</h2>
+          </div>
+          <nav class="flex-1 overflow-y-auto">
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="reports"
+            >
+              <i class="fas fa-chart-line w-6"></i
+              ><span class="ml-3">Laporan Umum</span>
+            </a>
+          </nav>
+          <div class="px-4 pt-4 border-t border-gray-700 text-xs">
+            <p>Mode: Localhost (Owner)</p>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+          <header
+            class="bg-white shadow-md p-4 flex justify-between items-center"
+          >
+            <button
+              id="owner-menu-btn"
+              class="text-gray-500 focus:outline-none md:hidden"
+            >
+              <i class="fas fa-bars fa-lg"></i>
+            </button>
+            <h1
+              id="owner-page-title"
+              class="text-xl md:text-2xl font-semibold text-gray-800"
+            >
+              Laporan Umum
+            </h1>
+            <button
+              id="owner-logout-btn"
+              class="logout-btn bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
+            >
+              <i class="fas fa-sign-out-alt mr-2"></i>Logout
+            </button>
+          </header>
+          <main class="flex-1 p-4 md:p-6 overflow-y-auto">
+            <!-- Page Content Goes Here -->
+            <div id="page-owner-reports" class="page-content-owner"></div>
+          </main>
+        </div>
+      </div>
+    </div>
+
     <!-- User App Screen (Initially Hidden) -->
     <div id="user-app-screen" class="hidden">
       <div class="relative min-h-screen md:flex">
@@ -468,6 +527,14 @@
               <i class="fas fa-truck-loading w-6"></i
               ><span class="ml-3">Angkut Ikan</span>
             </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-4 py-2 rounded-lg transition-colors duration-200 hover:bg-gray-700"
+              data-page="laporan"
+            >
+              <i class="fas fa-file-alt w-6"></i
+              ><span class="ml-3">Laporan</span>
+            </a>
           </nav>
           <div class="px-6 py-4 border-t border-gray-700 text-xs">
             <p>Login sebagai: <span id="loggedInUsername">User</span></p>
@@ -520,6 +587,7 @@
               id="page-user-transport-request"
               class="page-content-user hidden"
             ></div>
+            <div id="page-user-laporan" class="page-content-user hidden"></div>
           </main>
         </div>
       </div>
@@ -646,6 +714,29 @@
       </div>
     </div>
 
+    <!-- Tracking Modal for User -->
+    <div
+      id="trackingModal"
+      class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-40"
+    >
+      <div
+        class="bg-white rounded-lg shadow-xl w-full max-w-md p-6 transform transition-all"
+      >
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3 class="text-xl font-semibold">Detail Pelacakan Pengiriman</h3>
+          <button
+            id="closeTrackingModalBtn"
+            class="text-gray-500 hover:text-gray-800"
+          >
+            &times;
+          </button>
+        </div>
+        <div id="trackingInfo" class="mt-4 space-y-3">
+          <!-- Tracking details will be populated here -->
+        </div>
+      </div>
+    </div>
+
     <!-- Custom Confirmation Modal -->
     <div
       id="confirmModal"
@@ -698,6 +789,12 @@
             customerId: "cus1",
             serviceId: "svc2",
           },
+          {
+            id: "user2",
+            username: "owner",
+            password: "owner123",
+            role: "owner",
+          },
         ],
         notifications: [],
         fishProducts: [
@@ -730,11 +827,25 @@
             id: "sch1",
             orderId: "ord1",
             customerId: "cus1",
+            fleetId: "flt1",
             origin: "Gudang Pusat",
             destination: "Jl. Pengguna No. 123",
             departureDate: "2025-07-18",
             arrivalDate: "",
             status: "Dijadwalkan",
+          },
+          {
+            id: "sch2",
+            orderId: null,
+            customerId: "cus1",
+            fishType: "Ikan Kembung",
+            fleetId: "flt1",
+            origin: "Pelabuhan Muara Angke",
+            destination: "Pasar Ikan Cirebon",
+            weightKg: "100",
+            departureDate: "2025-07-20",
+            arrivalDate: "",
+            status: "Dalam Perjalanan",
           },
         ],
         services: [
@@ -815,6 +926,8 @@
           title: "Buat Permintaan Angkut",
           layout: "form",
         },
+        laporan: { title: "Laporan Aktivitas", layout: "report" },
+        reports: { title: "Laporan Umum", layout: "owner-report" },
         schedules: {
           title: "Jadwal Angkut",
           collectionName: "schedules",
@@ -980,52 +1093,68 @@
       };
 
       // --- DYNAMIC UI GENERATION ---
-      function createPageUI(pageKey, isAdmin = true) {
+      function createPageUI(pageKey, role = "admin") {
         const config = pageConfigs[pageKey];
-        const parentSelector = isAdmin
-          ? "#admin-app-screen"
-          : "#user-app-screen";
-        const containerId = isAdmin
-          ? `page-${pageKey}`
-          : `page-user-${pageKey}`;
-        const container = document.querySelector(
-          `${parentSelector} #${containerId}`
-        );
-        if (!container) return;
+        const parentSelector = `#${role}-app-screen`;
+        const containerId = `page-${role}-${pageKey}`;
 
+        const finalContainerId =
+          role === "admin" ? `page-${pageKey}` : `page-${role}-${pageKey}`;
+
+        const container = document.querySelector(
+          `${parentSelector} #${finalContainerId}`
+        );
+
+        if (!container) return;
         let content = "";
+        const isAdmin = role === "admin";
+
         if (config.layout === "dashboard") {
           return;
         } else if (config.layout === "profile") {
           content = `<div id="user-profile-content" class="bg-white p-8 rounded-lg shadow-md"></div>`;
         } else if (config.layout === "notifications") {
-          content = `<div id="notification-list-${
-            isAdmin ? "admin" : "user"
-          }" class="space-y-4"></div>`;
+          content = `<div id="notification-list-${role}" class="space-y-4"></div>`;
+        } else if (config.layout === "owner-report") {
+          content = `
+                  <div class="space-y-8">
+                      <!-- Summary Cards -->
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                          <div class="bg-white p-6 rounded-lg shadow-md flex items-center"><i class="fas fa-shopping-cart fa-3x text-blue-500"></i><div class="ml-4"><h3 class="text-gray-500">Total Pesanan</h3><p id="owner-total-orders" class="text-2xl font-bold">0</p></div></div>
+                          <div class="bg-white p-6 rounded-lg shadow-md flex items-center"><i class="fas fa-users fa-3x text-green-500"></i><div class="ml-4"><h3 class="text-gray-500">Total Customer</h3><p id="owner-total-customers" class="text-2xl font-bold">0</p></div></div>
+                          <div class="bg-white p-6 rounded-lg shadow-md flex items-center"><i class="fas fa-truck fa-3x text-yellow-500"></i><div class="ml-4"><h3 class="text-gray-500">Total Armada</h3><p id="owner-total-fleet" class="text-2xl font-bold">0</p></div></div>
+                          <div class="bg-white p-6 rounded-lg shadow-md flex items-center"><i class="fas fa-calendar-alt fa-3x text-red-500"></i><div class="ml-4"><h3 class="text-gray-500">Jadwal Aktif</h3><p id="owner-total-schedules" class="text-2xl font-bold">0</p></div></div>
+                      </div>
+
+                      <!-- All Data Tables -->
+                      <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4">Semua Pesanan</h3><div class="overflow-x-auto"><table class="w-full table-auto text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr id="owner-orders-header"></tr></thead><tbody id="owner-orders-body"></tbody></table></div></div>
+                      <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4">Semua Jadwal Angkut</h3><div class="overflow-x-auto"><table class="w-full table-auto text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr id="owner-schedules-header"></tr></thead><tbody id="owner-schedules-body"></tbody></table></div></div>
+                      <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4">Semua Pelanggan</h3><div class="overflow-x-auto"><table class="w-full table-auto text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr id="owner-customers-header"></tr></thead><tbody id="owner-customers-body"></tbody></table></div></div>
+                      <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4">Semua Armada</h3><div class="overflow-x-auto"><table class="w-full table-auto text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr id="owner-fleet-header"></tr></thead><tbody id="owner-fleet-body"></tbody></table></div></div>
+                  </div>
+              `;
+        } else if (config.layout === "report") {
+          content = `
+                  <div class="space-y-6">
+                      <h2 class="text-2xl font-bold text-gray-800">Laporan Aktivitas Saya</h2>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div class="bg-white p-6 rounded-lg shadow-md flex items-center"><i class="fas fa-shopping-cart fa-3x text-blue-500"></i><div class="ml-4"><h3 class="text-gray-500">Total Pesanan Ikan</h3><p id="report-total-orders" class="text-2xl font-bold">0</p></div></div>
+                          <div class="bg-white p-6 rounded-lg shadow-md flex items-center"><i class="fas fa-truck fa-3x text-green-500"></i><div class="ml-4"><h3 class="text-gray-500">Total Permintaan Angkut</h3><p id="report-total-transports" class="text-2xl font-bold">0</p></div></div>
+                      </div>
+                      <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4">Riwayat Pesanan Ikan</h3><div class="overflow-x-auto"><table class="w-full table-auto text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th scope="col" class="px-6 py-3">Tanggal</th><th scope="col" class="px-6 py-3">Produk</th><th scope="col" class="px-6 py-3">Berat (KG)</th><th scope="col" class="px-6 py-3">Status</th><th scope="col" class="px-6 py-3">Opsi</th></tr></thead><tbody id="report-orders-table-body"></tbody></table></div></div>
+                      <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4">Riwayat Permintaan Angkut</h3><div class="overflow-x-auto"><table class="w-full table-auto text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th scope="col" class="px-6 py-3">Tgl Berangkat</th><th scope="col" class="px-6 py-3">Asal</th><th scope="col" class="px-6 py-3">Tujuan</th><th scope="col" class="px-6 py-3">Detail</th><th scope="col" class="px-6 py-3">Status</th><th scope="col" class="px-6 py-3">Opsi</th></tr></thead><tbody id="report-transports-table-body"></tbody></table></div></div>
+                  </div>
+              `;
         } else if (config.layout === "form") {
           content = `
                     <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
                         <h2 class="text-2xl font-bold text-gray-800 mb-6">${config.title}</h2>
                         <form id="transport-request-form" class="space-y-4">
-                            <div>
-                                <label for="tr-origin" class="block text-sm font-medium text-gray-700">Lokasi Penjemputan</label>
-                                <input id="tr-origin" name="origin" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Pelabuhan Muara Angke">
-                            </div>
-                             <div>
-                                <label for="tr-destination" class="block text-sm font-medium text-gray-700">Lokasi Tujuan</label>
-                                <input id="tr-destination" name="destination" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Pasar Ikan Cirebon">
-                            </div>
-                             <div>
-                                <label for="tr-fishType" class="block text-sm font-medium text-gray-700">Jenis Ikan</label>
-                                <input id="tr-fishType" name="fishType" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Ikan Kembung">
-                            </div>
-                             <div>
-                                <label for="tr-weight" class="block text-sm font-medium text-gray-700">Perkiraan Berat (kg)</label>
-                                <input id="tr-weight" name="weight" type="number" min="1" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., 100">
-                            </div>
-                             <div class="flex justify-end pt-4">
-                                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Kirim Permintaan</button>
-                            </div>
+                            <div><label for="tr-origin" class="block text-sm font-medium text-gray-700">Lokasi Penjemputan</label><input id="tr-origin" name="origin" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Pelabuhan Muara Angke"></div>
+                            <div><label for="tr-destination" class="block text-sm font-medium text-gray-700">Lokasi Tujuan</label><input id="tr-destination" name="destination" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Pasar Ikan Cirebon"></div>
+                            <div><label for="tr-fishType" class="block text-sm font-medium text-gray-700">Jenis Ikan</label><input id="tr-fishType" name="fishType" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., Ikan Kembung"></div>
+                            <div><label for="tr-weight" class="block text-sm font-medium text-gray-700">Perkiraan Berat (kg)</label><input id="tr-weight" name="weight" type="number" min="1" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="e.g., 100"></div>
+                            <div class="flex justify-end pt-4"><button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Kirim Permintaan</button></div>
                         </form>
                     </div>
                 `;
@@ -1035,15 +1164,11 @@
                         <h2 class="text-xl font-semibold">${config.title}</h2>
                         ${
                           isAdmin
-                            ? `<button id="add-${pageKey}-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Tambah Produk
-                        </button>`
+                            ? `<button id="add-${pageKey}-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"><i class="fas fa-plus mr-2"></i>Tambah Produk</button>`
                             : ""
                         }
                     </div>
-                    <div id="${pageKey}-card-container-${
-            isAdmin ? "admin" : "user"
-          }" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+                    <div id="${pageKey}-card-container-${role}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
                 `;
         } else if (isAdmin) {
           content = `
@@ -1052,9 +1177,7 @@
                             <h2 class="text-xl font-semibold">${
                               config.title
                             }</h2>
-                            <button id="add-${pageKey}-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                                <i class="fas fa-plus mr-2"></i>Tambah Data
-                            </button>
+                            <button id="add-${pageKey}-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"><i class="fas fa-plus mr-2"></i>Tambah Data</button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full table-auto text-sm text-left text-gray-500">
@@ -1069,8 +1192,7 @@
                                         <th scope="col" class="px-6 py-3 text-right">Aksi</th>
                                     </tr>
                                 </thead>
-                                <tbody id="${pageKey}-table-body">
-                                </tbody>
+                                <tbody id="${pageKey}-table-body"></tbody>
                             </table>
                         </div>
                     </div>
@@ -1086,16 +1208,43 @@
 
       function renderAllPages() {
         Object.keys(pageConfigs).forEach((key) => {
-          renderPageContent(key, true);
-          if (
-            [
-              "buy-fish",
-              "notifications",
-              "profile",
-              "transport-request",
-            ].includes(key)
-          ) {
-            renderPageContent(key, false);
+          const config = pageConfigs[key];
+          if (config.layout === "owner-report") {
+            createPageUI(key, "owner");
+          } else if (config.layout !== "dashboard") {
+            createPageUI(key, "admin");
+            if (
+              [
+                "buy-fish",
+                "notifications",
+                "profile",
+                "transport-request",
+                "laporan",
+              ].includes(key)
+            ) {
+              createPageUI(key, "user");
+            }
+          }
+        });
+
+        // After all UIs are created, render their content
+        Object.keys(pageConfigs).forEach((key) => {
+          const config = pageConfigs[key];
+          if (config.layout === "owner-report") {
+            renderOwnerReportPage();
+          } else {
+            renderPageContent(key, true); // for admin
+            if (
+              [
+                "buy-fish",
+                "notifications",
+                "profile",
+                "transport-request",
+                "laporan",
+              ].includes(key)
+            ) {
+              renderPageContent(key, false); // for user
+            }
           }
         });
         updateNotificationBadges();
@@ -1111,12 +1260,19 @@
         "closePurchaseModalBtn"
       );
       const purchaseForm = document.getElementById("purchaseForm");
+      const trackingModal = document.getElementById("trackingModal");
+      const closeTrackingModalBtn = document.getElementById(
+        "closeTrackingModalBtn"
+      );
 
       closeModalBtn.addEventListener("click", () =>
         formModal.classList.add("hidden")
       );
       closePurchaseModalBtn.addEventListener("click", () =>
         purchaseModal.classList.add("hidden")
+      );
+      closeTrackingModalBtn.addEventListener("click", () =>
+        trackingModal.classList.add("hidden")
       );
 
       function openFormModal(pageKey, docId = null) {
@@ -1226,6 +1382,64 @@
         purchaseModal.classList.remove("hidden");
       }
 
+      function openTrackingModal(scheduleId) {
+        const schedule = localDB.schedules.find((s) => s.id === scheduleId);
+        const trackingInfoContainer = document.getElementById("trackingInfo");
+
+        if (!schedule) {
+          trackingInfoContainer.innerHTML =
+            '<p class="text-red-500">Data pengiriman tidak ditemukan.</p>';
+          trackingModal.classList.remove("hidden");
+          return;
+        }
+
+        const fleet = localDB.fleet.find((f) => f.id === schedule.fleetId);
+        const detail = schedule.orderId
+          ? `Pesanan Ikan (${
+              localDB.fishProducts.find(
+                (p) =>
+                  p.id ===
+                  localDB.orders.find((o) => o.id === schedule.orderId)
+                    ?.productId
+              )?.name || "N/A"
+            })`
+          : `Angkutan Ikan (${schedule.fishType || "N/A"})`;
+
+        trackingInfoContainer.innerHTML = `
+                <div class="p-2 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-500">Detail</label>
+                    <p class="text-md text-gray-900">${detail}</p>
+                </div>
+                <div class="p-2 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-500">Status</label>
+                    <p class="text-md font-semibold ${
+                      getStatusClass(schedule.status).split(" ")[1]
+                    }">${schedule.status}</p>
+                </div>
+                 <div class="p-2 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-500">Asal -> Tujuan</label>
+                    <p class="text-md text-gray-900">${schedule.origin} -> ${
+          schedule.destination
+        }</p>
+                </div>
+                 <div class="p-2 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-500">Tanggal Berangkat</label>
+                    <p class="text-md text-gray-900">${
+                      schedule.departureDate || "Belum ditentukan"
+                    }</p>
+                </div>
+                 <div class="p-2 bg-gray-50 rounded-lg">
+                    <label class="block text-sm font-medium text-gray-500">Armada</label>
+                    <p class="text-md text-gray-900">${
+                      fleet
+                        ? `${fleet.name} (${fleet.licensePlate})`
+                        : "Belum dialokasikan"
+                    }</p>
+                </div>
+            `;
+        trackingModal.classList.remove("hidden");
+      }
+
       function getDynamicOptions(collectionKey) {
         const config = pageConfigs[collectionKey];
         if (!config) return [];
@@ -1273,6 +1487,7 @@
                 );
                 localDB.schedules[scheduleIndex].departureDate =
                   updatedData.jadwalKirim;
+                localDB.schedules[scheduleIndex].fleetId = updatedData.fleetId;
               } else if (!originalData.jadwalKirim && updatedData.jadwalKirim) {
                 // If a schedule is newly created
                 const customer = localDB.customers.find(
@@ -1282,6 +1497,7 @@
                   id: "sch" + Date.now(),
                   orderId: docId,
                   customerId: updatedData.customerId,
+                  fleetId: updatedData.fleetId,
                   origin: updatedData.origin || "Gudang Pusat",
                   destination:
                     updatedData.destination ||
@@ -1448,11 +1664,230 @@
       }
 
       // --- DATA HANDLING (LOCAL) ---
+      function renderOwnerReportPage() {
+        // Render summary cards
+        document.getElementById("owner-total-orders").textContent =
+          localDB.orders.length;
+        document.getElementById("owner-total-customers").textContent =
+          localDB.customers.length;
+        document.getElementById("owner-total-fleet").textContent =
+          localDB.fleet.length;
+        document.getElementById("owner-total-schedules").textContent =
+          localDB.schedules.length;
+
+        const customersMap = new Map(localDB.customers.map((c) => [c.id, c]));
+        const servicesMap = new Map(localDB.services.map((s) => [s.id, s]));
+        const fishProductsMap = new Map(
+          localDB.fishProducts.map((p) => [p.id, p])
+        );
+
+        // Render tables
+        const renderTable = (pageKey, headerId, bodyId, data, rowRenderer) => {
+          const header = document.getElementById(headerId);
+          const body = document.getElementById(bodyId);
+          if (!header || !body) return;
+
+          header.innerHTML = pageConfigs[pageKey].columns
+            .map((col) => `<th scope="col" class="px-6 py-3">${col}</th>`)
+            .join("");
+
+          if (data.length === 0) {
+            body.innerHTML = `<tr><td colspan="${pageConfigs[pageKey].columns.length}" class="text-center p-4">Tidak ada data.</td></tr>`;
+          } else {
+            body.innerHTML = data.map(rowRenderer).join("");
+          }
+        };
+
+        // Render Orders Table
+        renderTable(
+          "orders",
+          "owner-orders-header",
+          "owner-orders-body",
+          localDB.orders,
+          (order) => {
+            const customerName =
+              customersMap.get(order.customerId)?.name || "N/A";
+            const detailPesanan = order.productId
+              ? fishProductsMap.get(order.productId)?.name
+              : `Angkut: ${order.fishType}`;
+            const serviceName = servicesMap.get(order.serviceId)?.name || "N/A";
+            return `<tr class="bg-white border-b hover:bg-gray-50">
+                  <td class="px-6 py-4">${order.orderDate || ""}</td>
+                  <td class="px-6 py-4">${customerName}</td>
+                  <td class="px-6 py-4">${detailPesanan}</td>
+                  <td class="px-6 py-4">${serviceName || "Belum diatur"}</td>
+                  <td class="px-6 py-4">${
+                    order.jadwalKirim || "Belum diatur"
+                  }</td>
+                  <td class="px-6 py-4">${order.weightKg || 0} KG</td>
+                  <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                    order.status
+                  )}">${order.status || ""}</span></td>
+              </tr>`;
+          }
+        );
+
+        // Render Schedules Table
+        renderTable(
+          "schedules",
+          "owner-schedules-header",
+          "owner-schedules-body",
+          localDB.schedules,
+          (schedule) => {
+            const customerName =
+              customersMap.get(schedule.customerId)?.name || "N/A";
+            const order = localDB.orders.find((o) => o.id === schedule.orderId);
+            const orderDetail = order
+              ? order.productId
+                ? fishProductsMap.get(order.productId)?.name
+                : `Angkut: ${order.fishType}`
+              : `Angkut: ${schedule.fishType}`;
+            const weightKg = order ? order.weightKg : schedule.weightKg;
+            return `<tr class="bg-white border-b hover:bg-gray-50">
+                  <td class="px-6 py-4">${schedule.departureDate || ""}</td>
+                  <td class="px-6 py-4">${schedule.arrivalDate || ""}</td>
+                  <td class="px-6 py-4">${customerName}</td>
+                  <td class="px-6 py-4">${orderDetail}</td>
+                  <td class="px-6 py-4">${schedule.origin || ""}</td>
+                  <td class="px-6 py-4">${schedule.destination || ""}</td>
+                  <td class="px-6 py-4">${weightKg || 0} KG</td>
+                  <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                    schedule.status
+                  )}">${schedule.status || ""}</span></td>
+              </tr>`;
+          }
+        );
+
+        // Render Customers Table
+        renderTable(
+          "customers",
+          "owner-customers-header",
+          "owner-customers-body",
+          localDB.customers,
+          (customer) => `
+              <tr class="bg-white border-b hover:bg-gray-50">
+                  <td class="px-6 py-4">${customer.name || ""}</td>
+                  <td class="px-6 py-4">${customer.phone || ""}</td>
+                  <td class="px-6 py-4 truncate max-w-xs">${
+                    customer.address || ""
+                  }</td>
+              </tr>`
+        );
+
+        // Render Fleet Table
+        renderTable(
+          "fleet",
+          "owner-fleet-header",
+          "owner-fleet-body",
+          localDB.fleet,
+          (item) => `
+              <tr class="bg-white border-b hover:bg-gray-50">
+                  <td class="px-6 py-4">${item.name || ""}</td>
+                  <td class="px-6 py-4">${item.licensePlate || ""}</td>
+                  <td class="px-6 py-4">${item.capacityKg || 0} KG</td>
+                  <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                    item.status
+                  )}">${item.status || ""}</span></td>
+              </tr>`
+        );
+      }
+
+      function renderUserReportPage() {
+        if (!currentUser || !currentUser.customerId) return;
+
+        const customerId = currentUser.customerId;
+        const userOrders = localDB.orders.filter(
+          (o) => o.customerId === customerId
+        );
+        const userTransports = localDB.schedules.filter(
+          (s) => s.customerId === customerId
+        );
+
+        document.getElementById("report-total-orders").textContent =
+          userOrders.length;
+        document.getElementById("report-total-transports").textContent =
+          userTransports.length;
+
+        const ordersTableBody = document.getElementById(
+          "report-orders-table-body"
+        );
+        const transportsTableBody = document.getElementById(
+          "report-transports-table-body"
+        );
+
+        if (userOrders.length === 0) {
+          ordersTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-4">Tidak ada riwayat pesanan.</td></tr>`;
+        } else {
+          ordersTableBody.innerHTML = userOrders
+            .map((order) => {
+              const product = localDB.fishProducts.find(
+                (p) => p.id === order.productId
+              );
+              const schedule = localDB.schedules.find(
+                (s) => s.orderId === order.id
+              );
+              return `
+                      <tr class="bg-white border-b hover:bg-gray-50">
+                          <td class="px-6 py-4">${order.orderDate}</td>
+                          <td class="px-6 py-4">${
+                            product ? product.name : "N/A"
+                          }</td>
+                          <td class="px-6 py-4">${order.weightKg}</td>
+                          <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                            order.status
+                          )}">${order.status}</span></td>
+                          <td class="px-6 py-4">
+                              ${
+                                schedule
+                                  ? `<button class="track-btn bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-xs" data-schedule-id="${schedule.id}">Lacak</button>`
+                                  : `<span class="text-xs text-gray-400">Belum Dikirim</span>`
+                              }
+                          </td>
+                      </tr>
+                  `;
+            })
+            .join("");
+        }
+
+        if (userTransports.length === 0) {
+          transportsTableBody.innerHTML = `<tr><td colspan="6" class="text-center p-4">Tidak ada riwayat angkutan.</td></tr>`;
+        } else {
+          transportsTableBody.innerHTML = userTransports
+            .map((transport) => {
+              const detail = transport.orderId
+                ? `Pesanan Ikan`
+                : `Angkutan: ${transport.fishType}`;
+              return `
+                      <tr class="bg-white border-b hover:bg-gray-50">
+                          <td class="px-6 py-4">${
+                            transport.departureDate || "Belum Dijadwalkan"
+                          }</td>
+                          <td class="px-6 py-4">${transport.origin}</td>
+                          <td class="px-6 py-4">${transport.destination}</td>
+                          <td class="px-6 py-4">${detail}</td>
+                          <td class="px-6 py-4"><span class="px-2 py-1 text-xs font-medium rounded-full ${getStatusClass(
+                            transport.status
+                          )}">${transport.status}</span></td>
+                          <td class="px-6 py-4">
+                               <button class="track-btn bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-xs" data-schedule-id="${
+                                 transport.id
+                               }">Lacak</button>
+                          </td>
+                      </tr>
+                  `;
+            })
+            .join("");
+        }
+      }
+
       function renderPageContent(pageKey, isAdmin = true) {
         const config = pageConfigs[pageKey];
         if (!config) return;
+        const role = isAdmin ? "admin" : "user";
 
-        if (config.layout === "profile" && !isAdmin) {
+        if (config.layout === "report" && !isAdmin) {
+          renderUserReportPage();
+        } else if (config.layout === "profile" && !isAdmin) {
           const profileContainer = document.getElementById(
             "user-profile-content"
           );
@@ -1478,44 +1913,28 @@
           profileContainer.innerHTML = `
                     <h2 class="text-2xl font-bold text-gray-800 mb-6">Profil Saya</h2>
                     <div class="space-y-4 text-left">
-                        <div class="p-4 bg-gray-50 rounded-lg">
-                            <label class="block text-sm font-medium text-gray-500">Username</label>
-                            <p class="text-lg text-gray-900">${
-                              currentUser.username
-                            }</p>
-                        </div>
-                        <div class="p-4 bg-gray-50 rounded-lg">
-                            <label class="block text-sm font-medium text-gray-500">Nama Lengkap</label>
-                            <p class="text-lg text-gray-900">${
-                              customerData.name
-                            }</p>
-                        </div>
-                        <div class="p-4 bg-gray-50 rounded-lg">
-                            <label class="block text-sm font-medium text-gray-500">Nomor Telepon</label>
-                            <p class="text-lg text-gray-900">${
-                              customerData.phone
-                            }</p>
-                        </div>
-                        <div class="p-4 bg-gray-50 rounded-lg">
-                            <label class="block text-sm font-medium text-gray-500">Alamat</label>
-                            <p class="text-lg text-gray-900">${
-                              customerData.address
-                            }</p>
-                        </div>
-                        <div class="p-4 bg-gray-50 rounded-lg">
-                            <label class="block text-sm font-medium text-gray-500">Paket Layanan</label>
-                            <p class="text-lg text-gray-900">${
-                              serviceData ? serviceData.name : "Belum dipilih"
-                            }</p>
-                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg"><label class="block text-sm font-medium text-gray-500">Username</label><p class="text-lg text-gray-900">${
+                          currentUser.username
+                        }</p></div>
+                        <div class="p-4 bg-gray-50 rounded-lg"><label class="block text-sm font-medium text-gray-500">Nama Lengkap</label><p class="text-lg text-gray-900">${
+                          customerData.name
+                        }</p></div>
+                        <div class="p-4 bg-gray-50 rounded-lg"><label class="block text-sm font-medium text-gray-500">Nomor Telepon</label><p class="text-lg text-gray-900">${
+                          customerData.phone
+                        }</p></div>
+                        <div class="p-4 bg-gray-50 rounded-lg"><label class="block text-sm font-medium text-gray-500">Alamat</label><p class="text-lg text-gray-900">${
+                          customerData.address
+                        }</p></div>
+                        <div class="p-4 bg-gray-50 rounded-lg"><label class="block text-sm font-medium text-gray-500">Paket Layanan</label><p class="text-lg text-gray-900">${
+                          serviceData ? serviceData.name : "Belum dipilih"
+                        }</p></div>
                     </div>
                 `;
         } else if (config.layout === "notifications") {
-          const listId = `notification-list-${isAdmin ? "admin" : "user"}`;
+          const listId = `notification-list-${role}`;
           const listContainer = document.getElementById(listId);
           if (!listContainer) return;
 
-          const role = isAdmin ? "admin" : "user";
           const notifications = localDB.notifications
             .filter((n) => n.forRole === role)
             .sort((a, b) => b.timestamp - a.timestamp);
@@ -1556,9 +1975,7 @@
             })
             .join("");
         } else if (config.layout === "cards") {
-          const cardContainerId = `${pageKey}-card-container-${
-            isAdmin ? "admin" : "user"
-          }`;
+          const cardContainerId = `${pageKey}-card-container-${role}`;
           const cardContainer = document.getElementById(cardContainerId);
           if (!cardContainer) return;
           const dataCollection = localDB[config.collectionName];
@@ -1589,15 +2006,12 @@
                                     <div class="flex justify-between items-center">
                                         <button class="buy-now-btn bg-green-500 text-white px-3 py-2 rounded-lg hover:bg-green-600 text-sm font-semibold flex-grow" data-id="${
                                           item.id
-                                        }" data-name="${item.name}">
-                                            <i class="fas fa-cart-plus mr-2"></i>Beli
-                                        </button>
+                                        }" data-name="${
+              item.name
+            }"><i class="fas fa-cart-plus mr-2"></i>Beli</button>
                                         ${
                                           isAdmin
-                                            ? `<div class="ml-2 flex">
-                                            <button class="edit-btn text-blue-600 hover:text-blue-800 p-2" data-page-key="${pageKey}" data-doc-id="${item.id}"><i class="fas fa-edit"></i></button>
-                                            <button class="delete-btn text-red-600 hover:text-red-800 p-2" data-page-key="${pageKey}" data-doc-id="${item.id}"><i class="fas fa-trash"></i></button>
-                                        </div>`
+                                            ? `<div class="ml-2 flex"><button class="edit-btn text-blue-600 hover:text-blue-800 p-2" data-page-key="${pageKey}" data-doc-id="${item.id}"><i class="fas fa-edit"></i></button><button class="delete-btn text-red-600 hover:text-red-800 p-2" data-page-key="${pageKey}" data-doc-id="${item.id}"><i class="fas fa-trash"></i></button></div>`
                                             : ""
                                         }
                                     </div>
@@ -1694,12 +2108,9 @@
                 data.status === "Menunggu Penjadwalan" ||
                 data.status === "Menunggu"
               ) {
-                actionButtonsHtml = `<button class="edit-btn bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-sm flex items-center" data-page-key="${pageKey}" data-doc-id="${docId}">
-                                                <i class="fas fa-calendar-alt mr-2"></i>Jadwalkan
-                                            </button>`;
+                actionButtonsHtml = `<button class="edit-btn bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 text-sm flex items-center" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-calendar-alt mr-2"></i>Jadwalkan</button>`;
               } else {
-                actionButtonsHtml = `<button class="edit-btn text-blue-600 hover:text-blue-800 mr-2" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-edit"></i></button>
-                                             <button class="delete-btn text-red-600 hover:text-red-800" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-trash"></i></button>`;
+                actionButtonsHtml = `<button class="edit-btn text-blue-600 hover:text-blue-800 mr-2" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-edit"></i></button><button class="delete-btn text-red-600 hover:text-red-800" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-trash"></i></button>`;
               }
 
               rowCells = `<td class="px-6 py-4">${
@@ -1716,10 +2127,7 @@
             }
 
             if (!actionButtonsHtml) {
-              actionButtonsHtml = `
-                            <button class="edit-btn text-blue-600 hover:text-blue-800 mr-2" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-edit"></i></button>
-                            <button class="delete-btn text-red-600 hover:text-red-800" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-trash"></i></button>
-                         `;
+              actionButtonsHtml = `<button class="edit-btn text-blue-600 hover:text-blue-800 mr-2" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-edit"></i></button><button class="delete-btn text-red-600 hover:text-red-800" data-page-key="${pageKey}" data-doc-id="${docId}"><i class="fas fa-trash"></i></button>`;
             }
 
             rowsHtml += `<tr class="bg-white border-b hover:bg-gray-50">${rowCells}<td class="px-6 py-4 text-right">${actionButtonsHtml}</td></tr>`;
@@ -1734,10 +2142,16 @@
         const deleteBtn = e.target.closest(".delete-btn");
         const buyBtn = e.target.closest(".buy-now-btn");
         const processBtn = e.target.closest(".process-order-btn");
+        const trackBtn = e.target.closest(".track-btn");
 
         if (editBtn) {
           const { pageKey, docId } = editBtn.dataset;
           openFormModal(pageKey, docId);
+        }
+
+        if (trackBtn) {
+          const { scheduleId } = trackBtn.dataset;
+          openTrackingModal(scheduleId);
         }
 
         if (deleteBtn) {
@@ -1840,60 +2254,44 @@
       }
 
       // --- NAVIGATION ---
-      function switchPage(pageId, isAdmin = true) {
-        const pageContents = document.querySelectorAll(
-          isAdmin ? ".page-content" : ".page-content-user"
-        );
-        pageContents.forEach((page) => page.classList.add("hidden"));
+      function switchPage(pageId, role) {
+        const pageToShowId =
+          role === "admin" ? `page-${pageId}` : `page-${role}-${pageId}`;
 
-        const pageToShowId = isAdmin ? `page-${pageId}` : `page-user-${pageId}`;
+        document
+          .querySelectorAll(
+            ".page-content, .page-content-user, .page-content-owner"
+          )
+          .forEach((p) => p.classList.add("hidden"));
+
         const elementToShow = document.getElementById(pageToShowId);
-
         if (elementToShow) {
           elementToShow.classList.remove("hidden");
+          if (pageId === "laporan" && role === "user") renderUserReportPage();
+          if (pageId === "reports" && role === "owner") renderOwnerReportPage();
         } else {
           console.error(`Error: Element with ID '${pageToShowId}' not found.`);
           return;
         }
 
-        const sidebar = document.getElementById(
-          isAdmin ? "admin-sidebar" : "user-sidebar"
-        );
-        sidebar
-          .querySelectorAll(".sidebar-item")
-          .forEach((item) => item.classList.remove("active"));
-        const activeItem = sidebar.querySelector(
-          `.sidebar-item[data-page="${pageId}"]`
-        );
-        if (activeItem) activeItem.classList.add("active");
-
-        const pageTitleEl = document.getElementById(
-          isAdmin ? "admin-page-title" : "user-page-title"
-        );
-
-        const adminPageTitles = {
-          dashboard: "Dashboard",
-          notifications: "Notifikasi",
-          "buy-fish": "Katalog Ikan",
-          schedules: "Jadwal Angkut",
-          services: "Paket Layanan",
-          fleet: "Data Armada",
-          customers: "Data Customer",
-          orders: "Data Pesanan",
-        };
-        const userPageTitles = {
-          dashboard: "Home",
-          profile: "Profil Saya",
-          notifications: "Notifikasi",
-          "buy-fish": "Beli Ikan",
-          "transport-request": "Buat Permintaan Angkut",
-        };
-
-        if (isAdmin) {
-          pageTitleEl.textContent = adminPageTitles[pageId] || "Page Not Found";
-        } else {
-          pageTitleEl.textContent = userPageTitles[pageId] || "Page Not Found";
+        const sidebar = document.getElementById(`${role}-sidebar`);
+        if (sidebar) {
+          sidebar
+            .querySelectorAll(".sidebar-item")
+            .forEach((item) => item.classList.remove("active"));
+          const activeItem = sidebar.querySelector(
+            `.sidebar-item[data-page="${pageId}"]`
+          );
+          if (activeItem) activeItem.classList.add("active");
         }
+
+        const pageTitleEl = document.getElementById(`${role}-page-title`);
+        const titles = {
+          admin: pageConfigs[pageId]?.title || "Page Not Found",
+          user: pageConfigs[pageId]?.title || "Page Not Found",
+          owner: pageConfigs[pageId]?.title || "Page Not Found",
+        };
+        if (pageTitleEl) pageTitleEl.textContent = titles[role];
       }
 
       document
@@ -1901,7 +2299,7 @@
         .forEach((item) => {
           item.addEventListener("click", (e) => {
             e.preventDefault();
-            switchPage(item.dataset.page, true);
+            switchPage(item.dataset.page, "admin");
           });
         });
       document
@@ -1909,9 +2307,57 @@
         .forEach((item) => {
           item.addEventListener("click", (e) => {
             e.preventDefault();
-            switchPage(item.dataset.page, false);
+            switchPage(item.dataset.page, "user");
           });
         });
+      document
+        .querySelectorAll("#owner-sidebar .sidebar-item")
+        .forEach((item) => {
+          item.addEventListener("click", (e) => {
+            e.preventDefault();
+            switchPage(item.dataset.page, "owner");
+          });
+        });
+
+      // --- MOBILE SIDEBAR TOGGLE ---
+      function setupSidebarToggle() {
+        const adminMenuBtn = document.getElementById("admin-menu-btn");
+        const userMenuBtn = document.getElementById("user-menu-btn");
+        const ownerMenuBtn = document.getElementById("owner-menu-btn");
+        const adminSidebar = document.getElementById("admin-sidebar");
+        const userSidebar = document.getElementById("user-sidebar");
+        const ownerSidebar = document.getElementById("owner-sidebar");
+        const sidebarOverlay = document.getElementById("sidebar-overlay");
+
+        const toggleSidebar = (sidebar) => {
+          if (sidebar) {
+            sidebar.classList.toggle("-translate-x-full");
+            sidebarOverlay.classList.toggle("hidden");
+          }
+        };
+
+        if (adminMenuBtn)
+          adminMenuBtn.addEventListener("click", () =>
+            toggleSidebar(adminSidebar)
+          );
+        if (userMenuBtn)
+          userMenuBtn.addEventListener("click", () =>
+            toggleSidebar(userSidebar)
+          );
+        if (ownerMenuBtn)
+          ownerMenuBtn.addEventListener("click", () =>
+            toggleSidebar(ownerSidebar)
+          );
+
+        if (sidebarOverlay) {
+          sidebarOverlay.addEventListener("click", () => {
+            if (adminSidebar) adminSidebar.classList.add("-translate-x-full");
+            if (userSidebar) userSidebar.classList.add("-translate-x-full");
+            if (ownerSidebar) ownerSidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
+          });
+        }
+      }
 
       // --- APP INITIALIZATION ---
       function populateRegisterServiceOptions() {
@@ -1927,25 +2373,12 @@
       }
 
       function initializeAppLogic() {
-        Object.keys(pageConfigs).forEach((key) => {
-          if (pageConfigs[key].layout !== "dashboard") {
-            createPageUI(key, true);
-            if (
-              [
-                "buy-fish",
-                "notifications",
-                "profile",
-                "transport-request",
-              ].includes(key)
-            ) {
-              createPageUI(key, false);
-            }
-          }
-        });
-        populateRegisterServiceOptions();
         renderAllPages();
-        switchPage("dashboard", true);
-        switchPage("dashboard", false);
+        populateRegisterServiceOptions();
+        setupSidebarToggle();
+        switchPage("dashboard", "admin");
+        switchPage("dashboard", "user");
+        switchPage("reports", "owner");
 
         const transportForm = document.getElementById("transport-request-form");
         if (transportForm) {
@@ -1955,7 +2388,7 @@
             const newScheduleId = "sch" + Date.now();
             const newSchedule = {
               id: newScheduleId,
-              orderId: null, // This is a transport request, not a product order
+              orderId: null,
               customerId: currentUser.customerId,
               fishType: formData.get("fishType"),
               origin: formData.get("origin"),
@@ -1992,6 +2425,7 @@
       const registerContainer = document.getElementById("register-container");
       const adminAppScreen = document.getElementById("admin-app-screen");
       const userAppScreen = document.getElementById("user-app-screen");
+      const ownerAppScreen = document.getElementById("owner-app-screen");
       const loginForm = document.getElementById("login-form");
       const registerForm = document.getElementById("register-form");
       const loginError = document.getElementById("login-error");
@@ -2025,13 +2459,20 @@
         if (user) {
           currentUser = user;
           authScreen.classList.add("hidden");
+          adminAppScreen.classList.add("hidden");
+          userAppScreen.classList.add("hidden");
+          ownerAppScreen.classList.add("hidden");
+
           if (user.role === "admin") {
             adminAppScreen.classList.remove("hidden");
+          } else if (user.role === "owner") {
+            ownerAppScreen.classList.remove("hidden");
+            renderOwnerReportPage();
           } else {
             userAppScreen.classList.remove("hidden");
             document.getElementById("loggedInUsername").textContent =
               user.username;
-            renderPageContent("profile", false); // Re-render profile page on login
+            renderAllPages();
           }
           loginError.classList.add("hidden");
         } else {
@@ -2095,6 +2536,7 @@
           currentUser = null;
           adminAppScreen.classList.add("hidden");
           userAppScreen.classList.add("hidden");
+          ownerAppScreen.classList.add("hidden");
           authScreen.classList.remove("hidden");
           loginForm.reset();
           registerForm.reset();
